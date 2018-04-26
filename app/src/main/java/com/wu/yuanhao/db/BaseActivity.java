@@ -10,7 +10,7 @@ import android.util.Log;
  * Created by Yuanhao on 2018/4/26.
  */
 
-public abstract class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

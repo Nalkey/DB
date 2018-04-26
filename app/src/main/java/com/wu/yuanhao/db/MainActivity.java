@@ -9,12 +9,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends BaseActivity {
     EditText mNameEt = null; // 用户名输入
     EditText mPasswordEt = null; // 密码输入
     Button mLoginBtn = null; // 登录按钮
+    ProgressBar mLoginProgBar = null; // 登录进度条
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +30,7 @@ public class MainActivity extends BaseActivity {
         mNameEt = (EditText) findViewById(R.id.name_et);
         mPasswordEt = (EditText) findViewById(R.id.pwd_et);
         mLoginBtn = (Button) findViewById(R.id.login_btn);
+        mLoginProgBar = (ProgressBar) findViewById(R.id.login_progress_bar);
 
         // 登录按钮绑定点击事件
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
@@ -38,7 +44,17 @@ public class MainActivity extends BaseActivity {
                 // 消息提示
                 if (password.equals(testPwd)){
                     // TODO
-                    HomePageActivity.actionStart(MainActivity.this, "data1", "data2");
+                    if (mLoginProgBar.getVisibility() != View.VISIBLE) {
+                        mLoginProgBar.setVisibility(View.VISIBLE);
+                    }
+                    TimerTask task = new TimerTask() {
+                        @Override
+                        public void run() {
+                            HomeActivity.actionStart(MainActivity.this, "data1", "data2");
+                            }
+                        };
+                    Timer timer = new Timer();
+                    timer.schedule(task, 5000);
                 }else{
                     Toast.makeText(MainActivity.this,
                             "用户名密码错误", Toast.LENGTH_SHORT).show();

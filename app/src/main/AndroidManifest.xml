@@ -19,11 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".HomePageActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_home_page"
-            android:theme="@style/FullscreenTheme"></activity>
+        <activity android:name=".HomeActivity"></activity>
+        <activity android:name=".BaseActivity"></activity>
     </application>
 
 </manifest>
