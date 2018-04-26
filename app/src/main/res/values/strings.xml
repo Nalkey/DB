@@ -2,7 +2,7 @@
     <string name="app_name">DB</string>
     <string name="title_activity_main">MainActivity</string>
 
-    <string name="title_activity_home_page">homePageActivity</string>
+    <string name="title_activity_home_page">HomePageActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

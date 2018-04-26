@@ -11,15 +11,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
-    private EditText mNameEt = null; // 用户名输入
-    private EditText mPasswordEt = null; // 密码输入
-    private Button mLoginBtn = null; // 登录按钮
+public class MainActivity extends BaseActivity {
+    EditText mNameEt = null; // 用户名输入
+    EditText mPasswordEt = null; // 密码输入
+    Button mLoginBtn = null; // 登录按钮
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.login_layout);
 
         // 获取界面组件
         mNameEt = (EditText) findViewById(R.id.name_et);
@@ -36,10 +36,9 @@ public class MainActivity extends AppCompatActivity {
                 String testPwd = "abc123";
 
                 // 消息提示
-                if( password == testPwd ){
+                if (password.equals(testPwd)){
                     // TODO
-                    Intent intent = new Intent(MainActivity.this, homePageActivity.class);
-                    startActivity(intent);
+                    HomePageActivity.actionStart(MainActivity.this, "data1", "data2");
                 }else{
                     Toast.makeText(MainActivity.this,
                             "用户名密码错误", Toast.LENGTH_SHORT).show();

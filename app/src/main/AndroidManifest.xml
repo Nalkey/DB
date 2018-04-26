@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".homePageActivity"
+            android:name=".HomePageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_home_page"
             android:theme="@style/FullscreenTheme"></activity>
