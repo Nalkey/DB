@@ -5,4 +5,6 @@
     <string name="title_activity_home_page">HomePageActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="db_btn_desc">Button_to_connect_DB</string>
+    <string name="settings_btn_desc">Button_to_set_personal_configuration</string>
 </resources>

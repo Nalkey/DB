@@ -3,6 +3,7 @@ package com.wu.yuanhao.db;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -15,6 +16,11 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActionBar mActionBar = getSupportActionBar();
+        // 隐藏标题栏
+        if (mActionBar != null) {
+            mActionBar.hide();
+        }
         // 可以在日志里看到是哪个Activity在活动
         Log.d("BaseActivity", getClass().getSimpleName());
     }

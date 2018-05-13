@@ -54,7 +54,7 @@ public class MainActivity extends BaseActivity {
                             }
                         };
                     Timer timer = new Timer();
-                    timer.schedule(task, 5000);
+                    timer.schedule(task, 2000);
                 }else{
                     Toast.makeText(MainActivity.this,
                             "用户名密码错误", Toast.LENGTH_SHORT).show();
