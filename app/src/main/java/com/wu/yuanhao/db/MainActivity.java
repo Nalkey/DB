@@ -6,6 +6,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,13 +41,15 @@ public class MainActivity extends BaseActivity {
                 // 获取用户名和密码的输入
                 String name = mNameEt.getText().toString();
                 String password = mPasswordEt.getText().toString();
-                String testPwd = "abc123";
+                String testPwd = "123";
 
                 // 消息提示
                 if (password.equals(testPwd)){
                     // TODO
-                    if (mLoginProgBar.getVisibility() != View.VISIBLE) {
+                    if (mLoginProgBar.getVisibility() == View.GONE) {
                         mLoginProgBar.setVisibility(View.VISIBLE);
+                    } else {
+                        mLoginProgBar.setVisibility(View.GONE);
                     }
                     TimerTask task = new TimerTask() {
                         @Override
@@ -61,6 +65,22 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.top_toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.about:
+                Toast.makeText(this, "Yuanhao WU", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+        }
+        return true;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.wu.yuanhao.db;
+package com.wu.yuanhao.db.util;
 
 import android.util.Log;
 
