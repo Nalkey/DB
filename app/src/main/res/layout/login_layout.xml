@@ -56,36 +56,37 @@
         android:maxLines="1"
         app:layout_constrainedHeight="true"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toBottomOf="@+id/login_btn"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_login"
         app:layout_constraintEnd_toStartOf="@+id/gl_right"
         app:layout_constraintStart_toStartOf="@+id/gl_left"
         app:layout_goneMarginTop="36dp" />
 
-    <Button
-        android:id="@+id/login_btn"
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_login"
         android:layout_width="0dp"
-        android:layout_height="85dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="32dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:text="登录"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintHorizontal_weight="2"
         app:layout_constraintStart_toStartOf="@+id/gl_right" />
 
     <ProgressBar
-        android:id="@+id/login_progress_bar"
+        android:id="@+id/progbar_login"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/low_gl"
+        app:layout_constraintBottom_toTopOf="@+id/gl_low"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/high_gl" />
+        app:layout_constraintTop_toTopOf="@+id/gl_high" />
 
     <android.support.constraint.Guideline
         android:id="@+id/gl_left"
@@ -102,25 +103,25 @@
         app:layout_constraintGuide_percent="0.75" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/iv_login_pic"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitXY"
-        app:layout_constraintBottom_toTopOf="@+id/high_gl"
+        app:layout_constraintBottom_toTopOf="@+id/gl_high"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/Sunrise" />
+        app:srcCompat="@drawable/sunrise" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/high_gl"
+        android:id="@+id/gl_high"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.6719577" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/low_gl"
+        android:id="@+id/gl_low"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

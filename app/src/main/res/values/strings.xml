@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">DB</string>
-    <string name="title_activity_main">Startup</string>
 
-    <string name="title_activity_home_page">HomePage</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_home_page">Home</string>
+
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="db_btn_desc">Button_to_connect_DB</string>
