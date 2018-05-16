@@ -1,13 +1,12 @@
 package com.wu.yuanhao.db;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
+import com.wu.yuanhao.db.util.BaseActivity;
 import com.wu.yuanhao.db.util.MyLog;
 
 public class HomeActivity extends BaseActivity implements View.OnClickListener {
