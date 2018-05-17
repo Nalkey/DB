@@ -1,6 +1,8 @@
 package com.wu.yuanhao.db;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -17,7 +19,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.home_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.top_toolbar);
         setSupportActionBar(toolbar);
         mDbBtn = (ImageView) findViewById(R.id.db_btn);
@@ -43,4 +45,21 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
                 break;
         }
     }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.top_toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.about:
+                Toast.makeText(this, "Yuanhao WU", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+        }
+        return true;
+    }
+
 }

@@ -20,7 +20,7 @@
         </activity>
         <activity android:name=".HomeActivity"
             android:label="@string/title_activity_home_page"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.Toolbar">
         </activity>
         <activity android:name=".util.BaseActivity"></activity>
     </application>

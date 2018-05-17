@@ -1,3 +1,26 @@
+1、宽高设置
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+组件的宽或者高都不能设置成 match_parent，如果设置了，后果就是该组件所有的约束失效。
+2、设置margin之前你必须设置layout_constraintLeft_toLeftOf 、layout_constraintRight_toRightOf、layout_constraintTop_toTopOf、layout_constraintBottom_toBottomOf等其中至少一个,才会有效果。
+
+获取屏幕宽度
+方法一：
+		WindowManager manager = this.getWindowManager();
+		DisplayMetrics outMetrics = new DisplayMetrics();
+		manager.getDefaultDisplay().getMetrics(outMetrics);
+		int width = outMetrics.widthPixels;
+		int height = outMetrics.heightPixels;
+方法二：
+		Resources resources = this.getResources();
+		DisplayMetrics dm = resources.getDisplayMetrics();
+		float density = dm.density;
+		int width = dm.widthPixels;
+		int height = dm.heightPixels;
+
+values.xml里，dimen下查看actionbar_default_height，会发现系统默认的是48dp
+
+
 https://www.cnblogs.com/yangfengwu/p/7785913.html
 http://www.cnblogs.com/klguang/p/4746059.html
 JDBC为java访问数据库提供通用的API，可以为多种关系数据库提供统一访问。
