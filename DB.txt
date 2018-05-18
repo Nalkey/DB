@@ -1,3 +1,5 @@
+// AK: eozjzNtc7CHtPKslYkBQKVBdE4Gv2Mpf
+
 1°¢øÌ∏ﬂ…Ë÷√
 android:layout_width="match_parent"
 android:layout_height="match_parent"

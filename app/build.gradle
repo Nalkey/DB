@@ -27,6 +27,12 @@ android {
     }
     productFlavors {
     }
+    sourceSets{
+        main{
+            jniLibs.srcDir 'libs'
+            //说明so的路径为该libs路径，关联所有地图SDK的so文件
+        }
+    }
 }
 
 dependencies {
@@ -40,4 +46,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation files('libs/BaiduLBS_Android.jar')
+    implementation files('libs/IndoorscapeAlbumPlugin.jar')
 }
