@@ -1,6 +1,8 @@
 package com.wu.yuanhao.db;
 // http://www.cnblogs.com/lonelyxmas/p/7349176.html
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
@@ -16,7 +18,9 @@ import com.wu.yuanhao.db.util.BaseActivity;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class LoginActivity extends BaseActivity {
+import static com.wu.yuanhao.db.util.BaseActivity.actionStart;
+
+public class LoginActivity extends AppCompatActivity {
 
     public static final int STD_SCRN_WIDTH = 768;
     ImageView mLoginImage = null; // 登录界面图片
@@ -36,13 +40,13 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.login_layout);
 
         // 获取界面组件
-        mLoginImage = (ImageView) findViewById(R.id.iv_login_pic);
-        mNameTv = (TextView) findViewById(R.id.tv_username);
-        mPasswordTv = (TextView) findViewById(R.id.tv_password);
-        mNameEt = (EditText) findViewById(R.id.et_name);
-        mPasswordEt = (EditText) findViewById(R.id.et_pwd);
-        mLoginBtn = (Button) findViewById(R.id.btn_login);
-        mLoginProgBar = (ProgressBar) findViewById(R.id.progbar_login);
+        mLoginImage = findViewById(R.id.iv_login_pic);
+        mNameTv = findViewById(R.id.tv_username);
+        mPasswordTv = findViewById(R.id.tv_password);
+        mNameEt = findViewById(R.id.et_name);
+        mPasswordEt = findViewById(R.id.et_pwd);
+        mLoginBtn = findViewById(R.id.btn_login);
+        mLoginProgBar = findViewById(R.id.progbar_login);
 
         // 获取屏幕宽度以定义字体大小
         mWindMng = this.getWindowManager();
@@ -74,14 +78,9 @@ public class LoginActivity extends BaseActivity {
                     } else {
                         mLoginProgBar.setVisibility(View.GONE);
                     }
-                    TimerTask task = new TimerTask() {
-                        @Override
-                        public void run() {
-                            HomeActivity.actionStart(LoginActivity.this, "data1", "data2");
-                            }
-                        };
-                    Timer timer = new Timer();
-                    timer.schedule(task, 2000);
+
+                    Intent mIntent = new Intent(LoginActivity.this, HomeActivity.class);
+                    startActivity(mIntent);
                 }else{
                     Toast.makeText(LoginActivity.this,
                             "用户名密码错误", Toast.LENGTH_SHORT).show();

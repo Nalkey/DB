@@ -8,4 +8,5 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="db_btn_desc">Button_to_connect_DB</string>
     <string name="settings_btn_desc">Button_to_set_personal_configuration</string>
+    <string name="top_toolbar_about">About</string>
 </resources>

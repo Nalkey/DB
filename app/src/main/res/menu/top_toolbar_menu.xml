@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/about"
-        android:icon="@mipmap/ic_launcher_round"
-        android:title="About"
+        android:icon="@drawable/ic_more_vert_black_48dp"
+        android:title="@string/top_toolbar_about"
         app:showAsAction="always" />
 </menu>
