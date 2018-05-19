@@ -10,6 +10,10 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.mapapi.map.MyLocationData;
 import com.google.gson.Gson;
 import com.wu.yuanhao.db.util.MyLog;
 
@@ -26,22 +30,37 @@ import interfaces.heweather.com.interfacesmodule.view.HeWeather;
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageButton mDbBtn = null;
+    private ImageButton mMapBtn = null;
     private ImageButton mSetBtn = null;
+    public LocationClient mLocationClient;
     private HeConfig mHeConfig = null;
     private HeWeather mHeWeather = null;
     private Now mWeatherInfo;
     private AirNow mAQI;
     private boolean mWeatherStatus = false;
 
+    // 获取当前定位，后期如果有其他activity调用可单独定义为一个类
+    public class MyLocationListener implements BDLocationListener {
+        @Override
+        public void onReceiveLocation(BDLocation location) {
+            StringBuilder currentPosition = new StringBuilder();
+
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLocationClient = new LocationClient(getApplicationContext());
+        mLocationClient.registerLocationListener(new MyLocationListener());
         setContentView(R.layout.home_layout);
         Toolbar toolbar = findViewById(R.id.top_toolbar);
         setSupportActionBar(toolbar);
         mDbBtn = findViewById(R.id.btn_db);
-        mSetBtn = findViewById(R.id.btn_map);
+        mMapBtn = findViewById(R.id.btn_map);
+        mSetBtn = findViewById(R.id.btn_settings);
         mDbBtn.setOnClickListener(this);
+        mMapBtn.setOnClickListener(this);
         mSetBtn.setOnClickListener(this);
 
         // 获取天气信息
@@ -119,11 +138,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_map:
                 // TODO
-                Toast.makeText(this, "Set", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
                 MyLog.v("TAG", "Map Button");
                 break;
             case R.id.btn_settings:
                 // TODO
+                Toast.makeText(this, "Set", Toast.LENGTH_SHORT).show();
+                MyLog.v("TAG", "Set Button");
+                break;
             default:
                 break;
         }

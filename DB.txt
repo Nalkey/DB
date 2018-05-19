@@ -25,6 +25,9 @@ gradle/wrapper/gradle-wrapper.properties里查看distributionUrl=https\://services.
 下载很慢，使用迅雷去下载，然后把zip包放到C:\Users\Yuanhao\.gradle\wrapper\dists\gradle-4.4-all\9br9xq1tocpiv8o6njlyu5op1\下解压
 并保证该文件夹下存在xx.zip.lck,xx.zip.part,xx.zip.ok文件
 
+放弃本地所有修改
+git checkout . && git clean -xdf
+
 
 https://www.cnblogs.com/yangfengwu/p/7785913.html
 http://www.cnblogs.com/klguang/p/4746059.html

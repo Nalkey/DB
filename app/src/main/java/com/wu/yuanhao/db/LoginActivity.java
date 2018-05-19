@@ -1,7 +1,12 @@
 package com.wu.yuanhao.db;
 // http://www.cnblogs.com/lonelyxmas/p/7349176.html
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -15,6 +20,8 @@ import android.widget.Toast;
 
 import com.wu.yuanhao.db.util.BaseActivity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -87,6 +94,52 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // APP请求权限，如果权限在APP运行时还未授权，就加入mPermissionList
+        List<String> mPermissionList = new ArrayList<>();
+        if(ContextCompat.checkSelfPermission(LoginActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            mPermissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if(ContextCompat.checkSelfPermission(LoginActivity.this,
+                Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            mPermissionList.add(Manifest.permission.READ_PHONE_STATE);
+        }
+        if(ContextCompat.checkSelfPermission(LoginActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            mPermissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if(ContextCompat.checkSelfPermission(LoginActivity.this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            mPermissionList.add(Manifest.permission.CAMERA);
+        }
+        // 统一申请所有未授权权限
+        if(!mPermissionList.isEmpty()) {
+            String[] permissions = mPermissionList.toArray(new String[mPermissionList.size()]);
+            ActivityCompat.requestPermissions(LoginActivity.this, permissions, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if(grantResults.length > 0) {
+                    for(int result : grantResults) {
+                        if(result != PackageManager.PERMISSION_GRANTED) {
+                            Toast.makeText(this, "必须同意所有权限，程序才能正常工作！",
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
+                            return;
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "发生未知错误", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                break;
+            default:
+        }
     }
 
 }
