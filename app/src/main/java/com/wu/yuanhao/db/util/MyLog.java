@@ -23,6 +23,12 @@ public class MyLog {
         }
     }
 
+    public static void v(String tag, String msg, Throwable tr) {
+        if (level <= VERBOSE) {
+            Log.v(tag, msg, tr);
+        }
+    }
+
     public static void d(String tag, String msg) {
         if (level <= DEBUG) {
             Log.d(tag, msg);
