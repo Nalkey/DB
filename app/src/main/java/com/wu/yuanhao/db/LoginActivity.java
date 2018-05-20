@@ -113,6 +113,14 @@ public class LoginActivity extends AppCompatActivity {
                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             mPermissionList.add(Manifest.permission.CAMERA);
         }
+        if(ContextCompat.checkSelfPermission(LoginActivity.this,
+                Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
+            mPermissionList.add(Manifest.permission.INTERNET);
+        }
+        if(ContextCompat.checkSelfPermission(LoginActivity.this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            mPermissionList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
         // 统一申请所有未授权权限
         if(!mPermissionList.isEmpty()) {
             String[] permissions = mPermissionList.toArray(new String[mPermissionList.size()]);
