@@ -15,11 +15,17 @@ public class MyLog {
     public static final int NOTHING = 6;
 
     // 当前使用的日志级别level
-    public static int level = VERBOSE;
+    public static int level = DEBUG;
 
     public static void v(String tag, String msg) {
         if (level <= VERBOSE) {
             Log.v(tag, msg);
+        }
+    }
+
+    public static void v(String tag, String msg, Throwable tr) {
+        if (level <= VERBOSE) {
+            Log.v(tag, msg, tr);
         }
     }
 
@@ -29,6 +35,11 @@ public class MyLog {
         }
     }
 
+    public static void d(String tag, String msg, Throwable tr) {
+        if (level <= DEBUG) {
+            Log.v(tag, msg, tr);
+        }
+    }
     public static void i(String tag, String msg) {
         if (level <= INFO) {
             Log.i(tag, msg);
