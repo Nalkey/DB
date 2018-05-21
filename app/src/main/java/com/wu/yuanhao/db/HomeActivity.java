@@ -135,10 +135,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             // 获取天气信息
-            String mHeWeatherUserID = this.getString(R.string.heweather_userid);
-            String mHeWeatherAK = this.getString(R.string.heweather_ak);
-            mHeConfig.init(mHeWeatherUserID, mHeWeatherAK);
-            mHeConfig.switchToFreeServerNode();
+            String mHeWeatherUserID = HomeActivity.this.getString(R.string.heweather_userid);
+            String mHeWeatherAK = HomeActivity.this.getString(R.string.heweather_ak);
+            HeConfig.init(mHeWeatherUserID, mHeWeatherAK);
+            HeConfig.switchToFreeServerNode();
         /*
          * 实况天气
          * 实况天气即为当前时间点的天气状况以及温湿风压等气象指数，具体包含的数据：体感温度、
@@ -150,7 +150,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
          * @param listener 网络访问回调接口
          */
             mHeWeather =new HeWeather();
-            mHeWeather.getWeatherNow(this, "haidian,beijing", new HeWeather.OnResultWeatherNowBeanListener() {
+            HeWeather.getWeatherNow(HomeActivity.this, "haidian,beijing", new HeWeather.OnResultWeatherNowBeanListener() {
                 @Override
                 public void onError(Throwable e) {
                     MyLog.d("TAG", "onError: ", e);
@@ -159,11 +159,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onSuccess(List<Now> dataObject) {
                     mWeatherInfo = dataObject.get(0);
-                    if(mWeatherInfo.getStatus().equals("ok")) {
-                        mWeatherStatus = true;
-                    } else {
-                        mWeatherStatus = false;
-                    }
+                    mWeatherStatus = mWeatherInfo.getStatus().equals("ok");
                     MyLog.d("TAG", "onSuccess: " + new Gson().toJson(dataObject));
                 }
             });
@@ -175,7 +171,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
          * @param unit     单位选择，公制（m）或英制（i），默认为公制单位
          * @param listener 网络访问回调接口
          */
-            mHeWeather.getAirNow(this, Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultAirNowBeansListener() {
+            HeWeather.getAirNow(HomeActivity.this, Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultAirNowBeansListener() {
                 @Override
                 public void onError(Throwable e) {
                     MyLog.d("TAG", "onError: ", e);
@@ -184,16 +180,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onSuccess(List<AirNow> dataObject) {
                     mAQI = dataObject.get(0);
-                    if(mWeatherInfo.getStatus().equals("ok")) {
-                        mWeatherStatus = true;
-                    } else {
-                        mWeatherStatus = false;
-                    }
+                    mWeatherStatus = mWeatherInfo.getStatus().equals("ok");
                     MyLog.d("TAG", "onSuccess: " + new Gson().toJson(dataObject));
                 }
             });
             if(mWeatherStatus == false) {
-                Toast.makeText(this, "天气服务不可用", Toast.LENGTH_SHORT).show();
+                Toast.makeText(HomeActivity.this, "天气服务不可用", Toast.LENGTH_SHORT).show();
                 // TODO: 载入图片
             } else {
                 // TODO: 载入气象信息在屏幕最下
