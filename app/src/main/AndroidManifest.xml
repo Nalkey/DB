@@ -37,11 +37,11 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTask">
         </activity>
-        <!--service
+        <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" >
-        </service-->
+        </service>
         <!--activity android:name=".util.BaseActivity"></activit-->
     </application>
 

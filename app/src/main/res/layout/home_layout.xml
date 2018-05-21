@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -91,5 +92,86 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.7" />
+
+    <ImageView
+        android:id="@+id/iv_air_cond"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toStartOf="@+id/gl_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/gl_v3"
+        app:srcCompat="@android:drawable/btn_star_big_on" />
+
+    <TextView
+        android:id="@+id/tv_temp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="25℃"
+        android:gravity="start|center_vertical"
+        app:layout_constraintTop_toTopOf="@+id/iv_air_cond"
+        app:layout_constraintBottom_toTopOf="@+id/tv_aqi"
+        app:layout_constraintEnd_toStartOf="@+id/tv_location"
+        app:layout_constraintStart_toStartOf="@+id/gl_left" />
+
+    <TextView
+        android:id="@+id/tv_location"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="北京"
+        android:gravity="start|center_vertical"
+        app:layout_constraintTop_toTopOf="@+id/tv_temp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_temp"
+        app:layout_constraintStart_toEndOf="@+id/tv_temp"
+        app:layout_constraintEnd_toStartOf="@+id/tv_air_cond" />
+
+    <TextView
+        android:id="@+id/tv_air_cond"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="晴"
+        android:gravity="start|center_vertical"
+        app:layout_constraintTop_toTopOf="@+id/tv_location"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_location"
+        app:layout_constraintStart_toEndOf="@+id/tv_location"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_aqi"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="AQI10"
+        android:gravity="start|center_vertical"
+        app:layout_constraintTop_toBottomOf="@+id/tv_temp"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_air_cond"
+        app:layout_constraintStart_toStartOf="@id/tv_temp"
+        app:layout_constraintEnd_toEndOf="@id/tv_temp" />
+
+    <TextView
+        android:id="@+id/tv_pollution"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:text="主要污染物PM2.5"
+        android:gravity="start|center_vertical"
+        app:layout_constraintTop_toTopOf="@+id/tv_aqi"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_aqi"
+        app:layout_constraintStart_toStartOf="@+id/tv_location"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

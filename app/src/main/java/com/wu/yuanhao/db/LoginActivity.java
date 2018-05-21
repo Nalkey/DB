@@ -30,16 +30,17 @@ import static com.wu.yuanhao.db.util.BaseActivity.actionStart;
 public class LoginActivity extends AppCompatActivity {
 
     public static final int STD_SCRN_WIDTH = 768;
-    ImageView mLoginImage = null; // 登录界面图片
-    ProgressBar mLoginProgBar = null; // 登录进度条
-    TextView mNameTv = null;
-    TextView mPasswordTv = null;
-    EditText mNameEt = null; // 用户名输入
-    EditText mPasswordEt = null; // 密码输入
-    Button mLoginBtn = null; // 登录按钮
+    ImageView mLoginImage; // 登录界面图片
+    ProgressBar mLoginProgBar; // 登录进度条
+    TextView mNameTv;
+    TextView mPasswordTv;
+    EditText mNameEt; // 用户名输入
+    EditText mPasswordEt; // 密码输入
+    Button mLoginBtn; // 登录按钮
     WindowManager mWindMng;
     DisplayMetrics outMetrics = new DisplayMetrics();
 //    public static final int STD_SCRN_HEIGHT = 1280;
+    public float mFontSize = 18;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         mWindMng.getDefaultDisplay().getMetrics(outMetrics);
         int mScrnWidth = outMetrics.widthPixels;
 //        int mScrnHeight = outMetrics.heightPixels;
-        float mFontSize = mScrnWidth/STD_SCRN_WIDTH *18;
+        mFontSize = mScrnWidth/STD_SCRN_WIDTH *18;
         mNameTv.setTextSize(mFontSize);
         mPasswordTv.setTextSize(mFontSize);
         mNameEt.setTextSize(mFontSize);
@@ -87,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     Intent mIntent = new Intent(LoginActivity.this, HomeActivity.class);
+                    mIntent.putExtra("FontSize", mFontSize);
                     startActivity(mIntent);
                 }else{
                     Toast.makeText(LoginActivity.this,
