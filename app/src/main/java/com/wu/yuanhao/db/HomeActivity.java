@@ -1,6 +1,7 @@
 package com.wu.yuanhao.db;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -12,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
@@ -20,6 +23,7 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.Text;
 import com.google.gson.Gson;
 import com.wu.yuanhao.db.util.MyLog;
 
@@ -36,9 +40,15 @@ import interfaces.heweather.com.interfacesmodule.view.HeWeather;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private ImageButton mDbBtn = null;
-    private ImageButton mMapBtn = null;
-    private ImageButton mSetBtn = null;
+    private ImageButton mDbBtn;
+    private ImageButton mMapBtn;
+    private ImageButton mSetBtn;
+    private ImageView mAirCondImg;
+    private TextView mTemperTv;
+    private TextView mLocationTv;
+    private TextView mAirCondTv;
+    private TextView mAqiTv;
+    private TextView mPollutionTv;
     public LocationClient mLocationClient;
     public LocationClientOption mLocationClientOpt;
     public String mPosition;
@@ -47,6 +57,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public Now mWeatherInfo;
     public AirNow mAQI;
     public boolean mWeatherStatus = false;
+    public float mFontSize = 18;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +73,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mDbBtn.setOnClickListener(this);
         mMapBtn.setOnClickListener(this);
         mSetBtn.setOnClickListener(this);
+        Intent mIntent = getIntent();
+        mFontSize = mIntent.getFloatExtra("FontSize", 18);
         MyLog.d("DBG", "onCreate");
 
         // 配置LocationClient
@@ -127,18 +140,31 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onReceiveLocation(BDLocation location) {
             if(TextUtils.isEmpty(location.getCity())) {
-                mPosition = "haidian,beijing";
+                mPosition = "beijing";
                 Toast.makeText(HomeActivity.this, "定位功能无法使用", Toast.LENGTH_SHORT).show();
+                MyLog.d("TAG", "Location cannot be used. " + mPosition);
             } else {
                 mPosition = location.getDistrict() + "." + location.getCity();
                 MyLog.d("TAG", "Location: " + mPosition);
             }
 
-            // 获取天气信息
+            // 初始化天气插件
+            mAirCondImg = findViewById(R.id.iv_air_cond);
+            mTemperTv = findViewById(R.id.tv_temp);
+            mLocationTv = findViewById(R.id.tv_location);
+            mAirCondTv = findViewById(R.id.tv_air_cond);
+            mAqiTv = findViewById(R.id.tv_aqi);
+            mPollutionTv = findViewById(R.id.tv_pollution);
+            mTemperTv.setTextSize(mFontSize);
+            mLocationTv.setTextSize(mFontSize);
+            mAirCondTv.setTextSize(mFontSize);
+            mAqiTv.setTextSize(mFontSize);
+            mPollutionTv.setTextSize(mFontSize);
+            // 配置和风，获取天气信息
             String mHeWeatherUserID = HomeActivity.this.getString(R.string.heweather_userid);
             String mHeWeatherAK = HomeActivity.this.getString(R.string.heweather_ak);
-            HeConfig.init(mHeWeatherUserID, mHeWeatherAK);
-            HeConfig.switchToFreeServerNode();
+            mHeConfig.init(mHeWeatherUserID, mHeWeatherAK);
+            mHeConfig.switchToFreeServerNode();
         /*
          * 实况天气
          * 实况天气即为当前时间点的天气状况以及温湿风压等气象指数，具体包含的数据：体感温度、
@@ -150,43 +176,45 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
          * @param listener 网络访问回调接口
          */
             mHeWeather =new HeWeather();
-            HeWeather.getWeatherNow(HomeActivity.this, "haidian,beijing", new HeWeather.OnResultWeatherNowBeanListener() {
+            mHeWeather.getWeatherNow(HomeActivity.this, mPosition, new HeWeather.OnResultWeatherNowBeanListener() {
                 @Override
                 public void onError(Throwable e) {
                     MyLog.d("TAG", "onError: ", e);
                 }
 
                 @Override
-                public void onSuccess(List<Now> dataObject) {
-                    mWeatherInfo = dataObject.get(0);
+                public void onSuccess(List<Now> weatherObject) {
+                    mWeatherInfo = weatherObject.get(0);
                     mWeatherStatus = mWeatherInfo.getStatus().equals("ok");
-                    MyLog.d("TAG", "onSuccess: " + new Gson().toJson(dataObject));
+                    MyLog.d("TAG", "onSuccess: " + new Gson().toJson(weatherObject));
                 }
             });
         /*
          * @param context  上下文
          * @param location (如果不添加此参数,SDK会根据GPS联网定位,根据当前经纬度查询)所查询的地区，可通过该地区名称、ID、Adcode、IP和经纬度进行查询
          *                 经纬度格式：纬度,经度（英文,分隔，十进制格式，北纬东经为正，南纬西经为负)
+         *                 AirNow的location跟Now的不一样！！！是City -> Air Station
          * @param lang     多语言，默认为简体中文，其他语言请参照多语言对照表
          * @param unit     单位选择，公制（m）或英制（i），默认为公制单位
          * @param listener 网络访问回调接口
          */
-            HeWeather.getAirNow(HomeActivity.this, Lang.CHINESE_SIMPLIFIED, Unit.METRIC, new HeWeather.OnResultAirNowBeansListener() {
+            mHeWeather.getAirNow(HomeActivity.this, mPosition, Lang.CHINESE_SIMPLIFIED, Unit.METRIC,
+                    new HeWeather.OnResultAirNowBeansListener() {
                 @Override
                 public void onError(Throwable e) {
                     MyLog.d("TAG", "onError: ", e);
                 }
 
                 @Override
-                public void onSuccess(List<AirNow> dataObject) {
-                    mAQI = dataObject.get(0);
-                    mWeatherStatus = mWeatherInfo.getStatus().equals("ok");
-                    MyLog.d("TAG", "onSuccess: " + new Gson().toJson(dataObject));
+                public void onSuccess(List<AirNow> aqiObject) {
+                    mAQI = aqiObject.get(0);
+                    mWeatherStatus = mAQI.getStatus().equals("ok");
+                    MyLog.d("TAG", "onSuccess: " + new Gson().toJson(aqiObject));
                 }
             });
             if(mWeatherStatus == false) {
                 Toast.makeText(HomeActivity.this, "天气服务不可用", Toast.LENGTH_SHORT).show();
-                // TODO: 载入图片
+                mAirCondImg.setBackgroundResource(R.drawable.w999);
             } else {
                 // TODO: 载入气象信息在屏幕最下
             }
