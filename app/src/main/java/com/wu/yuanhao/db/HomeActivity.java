@@ -1,14 +1,11 @@
 package com.wu.yuanhao.db;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,18 +19,16 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.baidu.mapapi.map.MyLocationData;
-import com.baidu.mapapi.map.Text;
 import com.google.gson.Gson;
 import com.wu.yuanhao.db.util.MyLog;
+import com.wu.yuanhao.db.util.MyWeather;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.lang.reflect.Field;
 import java.util.List;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -41,7 +36,6 @@ import interfaces.heweather.com.interfacesmodule.bean.Lang;
 import interfaces.heweather.com.interfacesmodule.bean.Unit;
 import interfaces.heweather.com.interfacesmodule.bean.air.now.AirNow;
 import interfaces.heweather.com.interfacesmodule.bean.weather.now.Now;
-import interfaces.heweather.com.interfacesmodule.bean.weather.now.NowBase;
 import interfaces.heweather.com.interfacesmodule.view.HeConfig;
 import interfaces.heweather.com.interfacesmodule.view.HeWeather;
 
@@ -59,13 +53,77 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public LocationClient mLocationClient;
     public LocationClientOption mLocationClientOpt;
     public String mPosition;
-    public HeConfig mHeConfig;
     public HeWeather mHeWeather;
     public Now mWeatherInfo;
     public AirNow mAQI;
-    public boolean mWeatherStatus = false;
     public float mFontSize = 18;
     private BufferedReader br;
+    private MyWeather mMyWeather;
+    // 在消息队列中实现对控件的更改
+    public static final int UPDATE = 1;
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case UPDATE:
+                    Now weatherInfo = (Now) msg.obj;
+                    if (weatherInfo.getStatus().equals("ok") == false) {
+                        Toast.makeText(HomeActivity.this, "天气服务不可用", Toast.LENGTH_SHORT).show();
+                        mAirCondImg.setBackgroundResource(R.drawable.w999);
+                    } else {
+                        // 读取raw/condition_code.txt，匹配code，获得MyWeather对象
+                        try {
+                            InputStream input = getResources().openRawResource(R.raw.condition_code);
+                            br = new BufferedReader(new InputStreamReader(input));
+                            CSVReader reader = new CSVReader(br, '|');
+                            String[] next = {};
+                            do {
+                                next = reader.readNext();
+                                if(weatherInfo.getNow().getCond_code().equals(next[0])) {
+                                    // TODO: 这儿String转id不对
+                                    // 当找到Cond_code时，构建mMyWeather，填入Cond_code,CondZh,CondEn,Image
+                                    Field field = R.drawable.class.getField(next[3]);
+                                    int code = field.getInt(next[3]);
+                                    mMyWeather = new MyWeather(next[0], next[1], next[2], code);
+
+                                    // 将mMyWeather传递到home_activity.xml上
+                                    mMyWeather.setLocation(weatherInfo.getBasic().getLocation());
+                                    //mMyWeather.setAQI(mAQI.getAir_now_city().getAqi());
+                                    //mMyWeather.setPollution(mAQI.getAir_now_city().getMain());
+                                    mAirCondImg.setBackgroundResource(mMyWeather.getImage());
+                                    mTemperTv.setText(mMyWeather.getCode());
+                                    mLocationTv.setText(mMyWeather.getLocation());
+                                    mAirCondTv.setText(mMyWeather.getCondZh());
+                                    //mAqiTv.setText(mMyWeather.getAQI());
+                                    //mPollutionTv.setText(mMyWeather.getPollution());
+                                    break;
+                                } else {
+                                    continue;
+                                }
+                            } while (next != null);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchFieldException e) {
+                            e.printStackTrace();
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (br != null) {
+                                try {
+                                    br.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,7 +205,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public class MyLocationListener implements BDLocationListener {
         @Override
         public void onReceiveLocation(BDLocation location) {
-            if(TextUtils.isEmpty(location.getCity())) {
+            if (TextUtils.isEmpty(location.getCity())) {
                 mPosition = "beijing";
                 Toast.makeText(HomeActivity.this, "定位功能无法使用", Toast.LENGTH_SHORT).show();
                 MyLog.d("TAG", "Location cannot be used. " + mPosition);
@@ -183,18 +241,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
          * @param unit     单位选择，公制（m）或英制（i），默认为公制单位
          * @param listener 网络访问回调接口
          */
-            mHeWeather =new HeWeather();
-            HeWeather.getWeatherNow(HomeActivity.this, mPosition, new HeWeather.OnResultWeatherNowBeanListener() {
+            mHeWeather = new HeWeather();
+            HeWeather.getWeatherNow(HomeActivity.this, mPosition,
+                    new HeWeather.OnResultWeatherNowBeanListener() {
                 @Override
                 public void onError(Throwable e) {
-                    MyLog.d("TAG", "onError: ", e);
+                    MyLog.d("HeWeather", "Now.onError: ", e);
                 }
 
                 @Override
                 public void onSuccess(List<Now> weatherObject) {
                     mWeatherInfo = weatherObject.get(0);
-                    mWeatherStatus = mWeatherInfo.getStatus().equals("ok");
-                    MyLog.d("TAG", "onSuccess: " + new Gson().toJson(weatherObject));
+                    MyLog.d("HeWeather", "Now.onSuccess: " + new Gson().toJson(weatherObject));
+                    Message msg = new Message();
+                    msg.what = UPDATE;
+                    msg.obj = mWeatherInfo;
+                    mHandler.sendMessage(msg);
                 }
             });
         /*
@@ -210,49 +272,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     new HeWeather.OnResultAirNowBeansListener() {
                 @Override
                 public void onError(Throwable e) {
-                    MyLog.d("TAG", "onError: ", e);
+                    MyLog.d("HeWeather", "AirNow.onError: ", e);
                 }
 
                 @Override
                 public void onSuccess(List<AirNow> aqiObject) {
                     mAQI = aqiObject.get(0);
-                    mWeatherStatus = mWeatherStatus || mAQI.getStatus().equals("ok");
-                    MyLog.d("TAG", "onSuccess: " + new Gson().toJson(aqiObject));
+                    MyLog.d("HeWeather", "AirNow.onSuccess: " + new Gson().toJson(aqiObject));
                 }
             });
-            if(mWeatherStatus == false) {
-                Toast.makeText(HomeActivity.this, "天气服务不可用", Toast.LENGTH_SHORT).show();
-                mAirCondImg.setBackgroundResource(R.drawable.w999);
-            } else {
-                // TODO: 载入气象信息在屏幕最下
-                initCond();
-            }
-        }
-    }
-
-    private void initCond() {
-        // TODO
-        try {
-            InputStream input = getResources().openRawResource(R.raw.condition_code);
-            br = new BufferedReader(new InputStreamReader(input));
-            CSVReader reader = new CSVReader(br, '|');
-            String[] next = {};
-            do {
-                next = reader.readNext();
-
-            } while(next != null);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if(br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }
