@@ -27,9 +27,16 @@ import com.baidu.mapapi.map.Text;
 import com.google.gson.Gson;
 import com.wu.yuanhao.db.util.MyLog;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import au.com.bytecode.opencsv.CSVReader;
 import interfaces.heweather.com.interfacesmodule.bean.Lang;
 import interfaces.heweather.com.interfacesmodule.bean.Unit;
 import interfaces.heweather.com.interfacesmodule.bean.air.now.AirNow;
@@ -58,6 +65,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public AirNow mAQI;
     public boolean mWeatherStatus = false;
     public float mFontSize = 18;
+    private BufferedReader br;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,8 +171,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             // 配置和风，获取天气信息
             String mHeWeatherUserID = HomeActivity.this.getString(R.string.heweather_userid);
             String mHeWeatherAK = HomeActivity.this.getString(R.string.heweather_ak);
-            mHeConfig.init(mHeWeatherUserID, mHeWeatherAK);
-            mHeConfig.switchToFreeServerNode();
+            HeConfig.init(mHeWeatherUserID, mHeWeatherAK);
+            HeConfig.switchToFreeServerNode();
         /*
          * 实况天气
          * 实况天气即为当前时间点的天气状况以及温湿风压等气象指数，具体包含的数据：体感温度、
@@ -176,7 +184,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
          * @param listener 网络访问回调接口
          */
             mHeWeather =new HeWeather();
-            mHeWeather.getWeatherNow(HomeActivity.this, mPosition, new HeWeather.OnResultWeatherNowBeanListener() {
+            HeWeather.getWeatherNow(HomeActivity.this, mPosition, new HeWeather.OnResultWeatherNowBeanListener() {
                 @Override
                 public void onError(Throwable e) {
                     MyLog.d("TAG", "onError: ", e);
@@ -198,7 +206,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
          * @param unit     单位选择，公制（m）或英制（i），默认为公制单位
          * @param listener 网络访问回调接口
          */
-            mHeWeather.getAirNow(HomeActivity.this, mPosition, Lang.CHINESE_SIMPLIFIED, Unit.METRIC,
+            HeWeather.getAirNow(HomeActivity.this, mPosition, Lang.CHINESE_SIMPLIFIED, Unit.METRIC,
                     new HeWeather.OnResultAirNowBeansListener() {
                 @Override
                 public void onError(Throwable e) {
@@ -208,7 +216,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onSuccess(List<AirNow> aqiObject) {
                     mAQI = aqiObject.get(0);
-                    mWeatherStatus = mAQI.getStatus().equals("ok");
+                    mWeatherStatus = mWeatherStatus || mAQI.getStatus().equals("ok");
                     MyLog.d("TAG", "onSuccess: " + new Gson().toJson(aqiObject));
                 }
             });
@@ -217,6 +225,33 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 mAirCondImg.setBackgroundResource(R.drawable.w999);
             } else {
                 // TODO: 载入气象信息在屏幕最下
+                initCond();
+            }
+        }
+    }
+
+    private void initCond() {
+        // TODO
+        try {
+            InputStream input = getResources().openRawResource(R.raw.condition_code);
+            br = new BufferedReader(new InputStreamReader(input));
+            CSVReader reader = new CSVReader(br, '|');
+            String[] next = {};
+            do {
+                next = reader.readNext();
+
+            } while(next != null);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
