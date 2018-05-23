@@ -1,6 +1,7 @@
 package com.wu.yuanhao.db;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -28,7 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -57,73 +58,87 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public Now mWeatherInfo;
     public AirNow mAQI;
     public float mFontSize = 18;
-    private BufferedReader br;
-    private MyWeather mMyWeather;
     // 在消息队列中实现对控件的更改
-    public static final int UPDATE = 1;
-    private Handler mHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case UPDATE:
-                    Now weatherInfo = (Now) msg.obj;
-                    if (weatherInfo.getStatus().equals("ok") == false) {
-                        Toast.makeText(HomeActivity.this, "天气服务不可用", Toast.LENGTH_SHORT).show();
-                        mAirCondImg.setBackgroundResource(R.drawable.w999);
-                    } else {
-                        // 读取raw/condition_code.txt，匹配code，获得MyWeather对象
-                        try {
-                            InputStream input = getResources().openRawResource(R.raw.condition_code);
-                            br = new BufferedReader(new InputStreamReader(input));
-                            CSVReader reader = new CSVReader(br, '|');
-                            String[] next = {};
-                            do {
-                                next = reader.readNext();
-                                if(weatherInfo.getNow().getCond_code().equals(next[0])) {
-                                    // TODO: 这儿String转id不对
-                                    // 当找到Cond_code时，构建mMyWeather，填入Cond_code,CondZh,CondEn,Image
-                                    Field field = R.drawable.class.getField(next[3]);
-                                    int code = field.getInt(next[3]);
-                                    mMyWeather = new MyWeather(next[0], next[1], next[2], code);
+    public static final int UPDATE_WEATHER = 1;
+    public static final int UPDATE_AQI =2;
+    private final MyHandler mHandler = new MyHandler(this);
 
-                                    // 将mMyWeather传递到home_activity.xml上
-                                    mMyWeather.setLocation(weatherInfo.getBasic().getLocation());
-                                    //mMyWeather.setAQI(mAQI.getAir_now_city().getAqi());
-                                    //mMyWeather.setPollution(mAQI.getAir_now_city().getMain());
-                                    mAirCondImg.setBackgroundResource(mMyWeather.getImage());
-                                    mTemperTv.setText(mMyWeather.getCode());
-                                    mLocationTv.setText(mMyWeather.getLocation());
-                                    mAirCondTv.setText(mMyWeather.getCondZh());
-                                    //mAqiTv.setText(mMyWeather.getAQI());
-                                    //mPollutionTv.setText(mMyWeather.getPollution());
-                                    break;
-                                } else {
-                                    continue;
-                                }
-                            } while (next != null);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (NoSuchFieldException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        } finally {
-                            if (br != null) {
-                                try {
-                                    br.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+    static class MyHandler extends Handler {
+        private WeakReference<HomeActivity> mActivity;
+
+        public MyHandler(HomeActivity activity) {
+            mActivity = new WeakReference<HomeActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            HomeActivity activity = mActivity.get();
+            if(activity != null) {
+                switch (msg.what) {
+                    case UPDATE_WEATHER:
+                        Now weatherInfo = (Now) msg.obj;
+                        InputStream input = activity.getResources().openRawResource(R.raw.condition_code);
+                        BufferedReader br = new BufferedReader(new InputStreamReader(input));
+                        CSVReader reader = new CSVReader(br, '|');
+                        String[] next = {};
+                        if (!weatherInfo.getStatus().equals("ok")) {
+                            Toast.makeText(activity, "天气服务不可用", Toast.LENGTH_SHORT).show();
+                            activity.mAirCondImg.setBackgroundResource(R.drawable.w999);
+                        } else {
+                            // 读取raw/condition_code.txt，匹配code，获得MyWeather对象
+                            try {
+                                do {
+                                    next = reader.readNext();
+                                    if(weatherInfo.getNow().getCond_code().equals(next[0])) {
+                                        // 当找到Cond_code时，构建mMyWeather，填入Cond_code,CondZh,CondEn,Image
+                                        Resources res = activity.getResources();
+                                        int code = res.getIdentifier(next[3], "drawable", activity.getPackageName());
+                                        MyWeather mMyWeather = new MyWeather(next[0], next[1], next[2], code);
+
+                                        // 将mMyWeather传递到home_activity.xml上
+                                        mMyWeather.setLocation(weatherInfo.getBasic().getLocation());
+                                        activity.mAirCondImg.setBackgroundResource(mMyWeather.getImage());
+                                        activity.mTemperTv.setText(mMyWeather.getCode());
+                                        activity.mLocationTv.setText(mMyWeather.getLocation());
+                                        activity.mAirCondTv.setText(mMyWeather.getCondZh());
+                                        //mAqiTv.setText(mMyWeather.getAQI());
+                                        //mPollutionTv.setText(mMyWeather.getPollution());
+                                        break;
+                                    } else {
+                                        continue;
+                                    }
+                                } while (next != null);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } finally {
+                                if (br != null) {
+                                    try {
+                                        br.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
                         }
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    case UPDATE_AQI:
+                        // TODO
+                        AirNow aqiInfo = (AirNow) msg.obj;
+                        if (!aqiInfo.getStatus().equals("ok")) {
+                            Toast.makeText(activity, "空气质量服务不可用", Toast.LENGTH_SHORT).show();
+                        } else {
+                            activity.mAqiTv.setText(aqiInfo.getAir_now_city().getAqi());
+                            activity.mPollutionTv.setText(aqiInfo.getAir_now_city().getMain());
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
-    };
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -231,16 +246,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             String mHeWeatherAK = HomeActivity.this.getString(R.string.heweather_ak);
             HeConfig.init(mHeWeatherUserID, mHeWeatherAK);
             HeConfig.switchToFreeServerNode();
-        /*
-         * 实况天气
-         * 实况天气即为当前时间点的天气状况以及温湿风压等气象指数，具体包含的数据：体感温度、
-         * 实测温度、天气状况、风力、风速、风向、相对湿度、大气压强、降水量、能见度等。
-         * @param context  上下文
-         * @param location 地址，支持location=chaoyang,beijing等，暂时先用auto_ip，但准确率取决于服务节点
-         * @param lang     多语言，默认为简体中文
-         * @param unit     单位选择，公制（m）或英制（i），默认为公制单位
-         * @param listener 网络访问回调接口
-         */
+            /*
+            * 实况天气
+            * 实况天气即为当前时间点的天气状况以及温湿风压等气象指数，具体包含的数据：体感温度、
+            * 实测温度、天气状况、风力、风速、风向、相对湿度、大气压强、降水量、能见度等。
+            * @param context  上下文
+            * @param location 地址，支持location=chaoyang,beijing等，暂时先用auto_ip，但准确率取决于服务节点
+            * @param lang     多语言，默认为简体中文
+            * @param unit     单位选择，公制（m）或英制（i），默认为公制单位
+            * @param listener 网络访问回调接口
+            */
             mHeWeather = new HeWeather();
             HeWeather.getWeatherNow(HomeActivity.this, mPosition,
                     new HeWeather.OnResultWeatherNowBeanListener() {
@@ -253,10 +268,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 public void onSuccess(List<Now> weatherObject) {
                     mWeatherInfo = weatherObject.get(0);
                     MyLog.d("HeWeather", "Now.onSuccess: " + new Gson().toJson(weatherObject));
-                    Message msg = new Message();
-                    msg.what = UPDATE;
-                    msg.obj = mWeatherInfo;
-                    mHandler.sendMessage(msg);
+
+                    Message weatherMsg = new Message();
+                    weatherMsg.what = UPDATE_WEATHER;
+                    weatherMsg.obj = mWeatherInfo;
+                    mHandler.sendMessage(weatherMsg);
                 }
             });
         /*
@@ -279,6 +295,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 public void onSuccess(List<AirNow> aqiObject) {
                     mAQI = aqiObject.get(0);
                     MyLog.d("HeWeather", "AirNow.onSuccess: " + new Gson().toJson(aqiObject));
+
+                    Message aqiMsg = new Message();
+                    aqiMsg.what = UPDATE_AQI;
+                    aqiMsg.obj = mWeatherInfo;
+                    mHandler.sendMessage(aqiMsg);
                 }
             });
         }
