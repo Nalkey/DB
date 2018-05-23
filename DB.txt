@@ -28,6 +28,7 @@ gradle/wrapper/gradle-wrapper.properties里查看distributionUrl=https\://services.
 放弃本地所有修改
 git checkout . && git clean -xdf
 
+10.2.2 Handler
 
 https://www.cnblogs.com/yangfengwu/p/7785913.html
 http://www.cnblogs.com/klguang/p/4746059.html
