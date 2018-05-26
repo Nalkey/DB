@@ -61,12 +61,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     // 在消息队列中实现对控件的更改
     public static final int UPDATE_WEATHER = 1;
     public static final int UPDATE_AQI =2;
-    private final MyHandler mHandler = new MyHandler(this);
+    private final WeatherHandler mWeaHandler = new WeatherHandler(this);
+    private final AqiHandler mAqiHandler = new AqiHandler(this);
 
-    static class MyHandler extends Handler {
+    static class WeatherHandler extends Handler {
         private WeakReference<HomeActivity> mActivity;
 
-        public MyHandler(HomeActivity activity) {
+        public WeatherHandler(HomeActivity activity) {
             mActivity = new WeakReference<HomeActivity>(activity);
         }
 
@@ -123,8 +124,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         }
                         break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    static class AqiHandler extends Handler {
+        private WeakReference<HomeActivity> mActivity;
+
+        public AqiHandler(HomeActivity activity) {
+            mActivity = new WeakReference<HomeActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            HomeActivity activity = mActivity.get();
+            if(activity != null) {
+                switch (msg.what) {
                     case UPDATE_AQI:
-                        // TODO
                         AirNow aqiInfo = (AirNow) msg.obj;
                         if (!aqiInfo.getStatus().equals("ok")) {
                             Toast.makeText(activity, "空气质量服务不可用", Toast.LENGTH_SHORT).show();
@@ -272,7 +291,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Message weatherMsg = new Message();
                     weatherMsg.what = UPDATE_WEATHER;
                     weatherMsg.obj = mWeatherInfo;
-                    mHandler.sendMessage(weatherMsg);
+                    mWeaHandler.sendMessage(weatherMsg);
                 }
             });
         /*
@@ -298,8 +317,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                     Message aqiMsg = new Message();
                     aqiMsg.what = UPDATE_AQI;
-                    aqiMsg.obj = mWeatherInfo;
-                    mHandler.sendMessage(aqiMsg);
+                    aqiMsg.obj = mAQI;
+                    mAqiHandler.sendMessage(aqiMsg);
                 }
             });
         }
