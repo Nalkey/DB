@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wu.yuanhao.db.util.BaseActivity;
+import com.wu.yuanhao.db.util.MyLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,6 +140,7 @@ public class LoginActivity extends AppCompatActivity {
                         if(result != PackageManager.PERMISSION_GRANTED) {
                             Toast.makeText(this, "必须同意所有权限，程序才能正常工作！",
                                     Toast.LENGTH_SHORT).show();
+                            MyLog.d("Permission", Integer.toString(result));
                             finish();
                             return;
                         }

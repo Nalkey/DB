@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -163,7 +164,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLocationClient = new LocationClient(getApplicationContext());
-        mLocationClient.registerLocationListener(new MyLocationListener());
+        mLocationClient.registerLocationListener(new HomeLocationListener());
         setContentView(R.layout.home_layout);
         Toolbar toolbar = findViewById(R.id.top_toolbar);
         setSupportActionBar(toolbar);
@@ -196,9 +197,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 MyLog.d("TAG", "DB Button");
                 break;
             case R.id.btn_map:
-                // TODO
-                Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
-                MyLog.d("TAG", "Map Button");
+                Intent mIntent = new Intent(HomeActivity.this, MapActivity.class);
+                startActivity(mIntent);
+                MyLog.d("Intent", "Map Button");
                 break;
             case R.id.btn_settings:
                 // TODO
@@ -219,7 +220,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.about:
-                Toast.makeText(this, "Yuanhao WU", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder dialog = new AlertDialog.Builder(HomeActivity.this);
+                dialog.setTitle("关于");
+                dialog.setMessage("作者：Yuanhao WU\n邮箱：254138148@qq.com");
+                dialog.show();
                 break;
             default:
         }
@@ -236,7 +240,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     // 若无法取得定位，默认定位北京海淀区
     // 1.由于定位是异步的，和风等待定位结果才能获得location
     // 2.这样正好符合天气信息插件不影响主要功能的使用
-    public class MyLocationListener implements BDLocationListener {
+    public class HomeLocationListener implements BDLocationListener {
         @Override
         public void onReceiveLocation(BDLocation location) {
             if (TextUtils.isEmpty(location.getCity())) {
