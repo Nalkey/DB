@@ -194,17 +194,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_db:
                 // TODO
                 Toast.makeText(this, "DB", Toast.LENGTH_SHORT).show();
-                MyLog.d("TAG", "DB Button");
+                MyLog.d("HomeIntent", "DB Button");
                 break;
             case R.id.btn_map:
                 Intent mIntent = new Intent(HomeActivity.this, MapActivity.class);
                 startActivity(mIntent);
-                MyLog.d("Intent", "Map Button");
+                MyLog.d("HomeIntent", "Map Button");
                 break;
             case R.id.btn_settings:
                 // TODO
                 Toast.makeText(this, "Set", Toast.LENGTH_SHORT).show();
-                MyLog.d("TAG", "Set Button");
+                MyLog.d("HomeIntent", "Set Button");
                 break;
             default:
                 break;
