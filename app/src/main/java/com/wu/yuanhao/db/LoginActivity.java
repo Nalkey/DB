@@ -1,10 +1,14 @@
 package com.wu.yuanhao.db;
-// http://www.cnblogs.com/lonelyxmas/p/7349176.html
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,13 +22,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.wu.yuanhao.db.util.BaseActivity;
+import com.bumptech.glide.Glide;
+import com.wu.yuanhao.db.util.HttpUtil;
 import com.wu.yuanhao.db.util.MyLog;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 import static com.wu.yuanhao.db.util.BaseActivity.actionStart;
 
@@ -46,6 +54,14 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 把屏幕最上面系统的状态栏和图片融合到一起，通过setSystemUiVisibility()改变系统UI的显示
+        // Android 5.0以上支持
+        if(Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.login_layout);
 
         // 获取界面组件
@@ -56,6 +72,15 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordEt = findViewById(R.id.et_pwd);
         mLoginBtn = findViewById(R.id.btn_login);
         mLoginProgBar = findViewById(R.id.progbar_login);
+
+        // 获取SharedPreferences中的缓存背景图片，如果有直接调用glide加载，如果没有就调用loadBingPic()
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String mBingPic = mPrefs.getString("bing_pic", null);
+        if(mBingPic != null) {
+            Glide.with(this).load(mBingPic).into(mLoginImage);
+        } else {
+            loadBingPic();
+        }
 
         // 获取屏幕宽度以定义字体大小
         mWindMng = this.getWindowManager();
@@ -69,7 +94,6 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordEt.setTextSize(mFontSize);
         mLoginBtn.setTextSize(mFontSize);
 
-        // TODO: 登录界面图片每日一换
         // 登录按钮绑定点击事件
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,4 +178,29 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    // 从网络加载Bing每日一图：从guolin/api获得图片真实地址，将地址缓存到SharedPreferences中，使用glide加载
+    private void loadBingPic() {
+        String requestBingPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpReq(requestBingPic, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bingPic = response.body().string();
+                SharedPreferences.Editor editor = PreferenceManager.
+                        getDefaultSharedPreferences(LoginActivity.this).edit();
+                editor.putString("bing_pic", bingPic);
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(LoginActivity.this).load(bingPic).into(mLoginImage);
+                    }
+                });
+            }
+        });
+    }
 }
