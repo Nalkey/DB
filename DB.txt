@@ -1,6 +1,6 @@
-https://blog.csdn.net/zhangqindabendan/article/details/52842031
-https://blog.csdn.net/weixin_37730482/article/details/77984417
-com.mysql.cj.jdbc.Driver
+https://www.cnblogs.com/renyuzhuo/p/5031296.html
+https://blog.csdn.net/carson_ho/article/details/73732076
+https://www.jianshu.com/p/308f3c54abdd
 1°¢øÌ∏ﬂ…Ë÷√
 android:layout_width="match_parent"
 android:layout_height="match_parent"
