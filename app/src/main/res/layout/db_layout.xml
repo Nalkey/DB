@@ -4,6 +4,130 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.wu.yuanhao.db.DbActivity">
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:gravity="end|center_vertical"
+        android:text="姓名:"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_gender"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/et_name" />
+
+    <TextView
+        android:id="@+id/tv_gender"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:gravity="end|center_vertical"
+        android:text="性别:"
+        app:layout_constraintTop_toBottomOf="@+id/tv_name"
+        app:layout_constraintBottom_toTopOf="@+id/gl_hz_db"
+        app:layout_constraintStart_toStartOf="@+id/tv_name"
+        app:layout_constraintEnd_toEndOf="@+id/tv_name" />
+
+    <EditText
+        android:id="@+id/et_name"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:hint="输入姓名"
+        android:inputType="text"
+        android:maxLines="1"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintTop_toTopOf="@+id/tv_name"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_name"
+        app:layout_constraintStart_toEndOf="@+id/gl_left_db"
+        app:layout_constraintEnd_toStartOf="@+id/gl_right_db" />
+
+    <RadioGroup
+        android:id="@+id/rg_gender"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="@+id/tv_gender"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_gender"
+        app:layout_constraintStart_toStartOf="@+id/et_name"
+        app:layout_constraintEnd_toEndOf="@+id/et_name">
+
+        <RadioButton
+            android:id="@+id/rd_male"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="男" />
+
+        <RadioButton
+            android:id="@+id/rd_female"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="女" />
+    </RadioGroup>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_query"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:text="查询"
+        app:layout_constraintBottom_toBottomOf="@+id/gl_hz_db"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/gl_right_db"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_query_result"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/gl_hz_db" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/gl_hz_db"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/gl_left_db"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.2" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/gl_right_db"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
 
 </android.support.constraint.ConstraintLayout>

@@ -13,10 +13,10 @@
         android:layout_marginStart="8dp"
         android:gravity="end|center_vertical"
         android:text="用户名:"
-        app:layout_constraintBottom_toBottomOf="@id/et_name"
+        app:layout_constraintBottom_toBottomOf="@id/et_username"
         app:layout_constraintEnd_toStartOf="@+id/gl_left"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/et_name" />
+        app:layout_constraintTop_toTopOf="@id/et_username" />
 
     <TextView
         android:id="@+id/tv_password"
@@ -32,7 +32,7 @@
         app:layout_constraintTop_toTopOf="@+id/et_pwd" />
 
     <EditText
-        android:id="@+id/et_name"
+        android:id="@+id/et_username"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -64,7 +64,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/btn_login"
         app:layout_constraintEnd_toStartOf="@+id/gl_right"
         app:layout_constraintStart_toStartOf="@+id/gl_left"
-        app:layout_constraintTop_toBottomOf="@+id/et_name" />
+        app:layout_constraintTop_toBottomOf="@+id/et_username" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/btn_login"

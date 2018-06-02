@@ -1,6 +1,15 @@
-https://www.cnblogs.com/renyuzhuo/p/5031296.html
-https://blog.csdn.net/carson_ho/article/details/73732076
+Retrofit -> DjangoORM -> MySQL
 https://www.jianshu.com/p/308f3c54abdd
+注解和retrofit
+https://www.jianshu.com/p/f1a8356c615f?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
+
+服务器返回JSON格式：
+{
+  "status": 1,
+  "msg": "message",
+  "data":{}
+}
+
 1、宽高设置
 android:layout_width="match_parent"
 android:layout_height="match_parent"
@@ -31,159 +40,7 @@ gradle/wrapper/gradle-wrapper.properties里查看distributionUrl=https\://services.
 放弃本地所有修改
 git checkout . && git clean -xdf
 
+Retrofit详解，可继续阅读源码分析
+https://blog.csdn.net/carson_ho/article/details/73732076
+
 10.2.2 Handler
-
-https://www.cnblogs.com/yangfengwu/p/7785913.html
-http://www.cnblogs.com/klguang/p/4746059.html
-JDBC为java访问数据库提供通用的API，可以为多种关系数据库提供统一访问。
-做三件事：
-与数据库建立连接
-发送SQL语句
-处理结果
-
-重要的类
-java.sql.DriverManager：用来加载不同的JDBC驱动程序并且为创建的新的数据库连接提供支持；
-java.sql.Connection：完成对某一指定数据库的连接功能；
-java.sql.Statement：在一个已经创建的连接（java.sql.Connection）中作为执行SQL语句的容器；它包含了两个重要的子类：
-    java.sql.PreparedStatement：用于执行预编译的SQL语句；
-    java.sql.CallableStatement：用于执行数据库中已经创建好的存储过程（Stored Procedure）。
-java.sql.ResultSet：代表特定SQL语句执行后的数据库结果集。
-
-与数据库建立连接
-JDBC URL的标准语法如下下所示。他们之间由冒号分隔：
-<协议jdbc>:<子协议>:<子名称>
-<协议>：JDBC URL中的协议总是jdbc。
-<子协议>：驱动程序名或数据库连接机制的名称。例如：mysql
-<数据源>：包含要连接数据库的主机、端口、名称、用户名、密码等信息
-jdbc:mysql://[hostname][:port]/[dbname][?param1=value1][&param2=value2]
-mysql端口号（port）可以通过如下方式查询：
-mysql>show global variables like 'port';
-
-Sample:
-    // 与数据库建立连接
-    public static Connection getConn(String username, String password,
-            String DBname) {
-        String driver = "com.mysql.jdbc.Driver";
-        String url = "jdbc:mysql://localhost:3306/" + DBname;
-        Connection conn = null;
-        try {
-            // 使用DriverManager管理驱动类
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, username, password);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return conn;
-    }
-
-    // 使用“show databases”测试SQL连接
-    public static void testConn() throws SQLException {
-        Connection conn = getConn("root", "password", "databasename");
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("show databases");
-        while (rs.next()) {
-            System.out.println(rs.getString(""));
-        }
-        // 显示关闭Statement对象，释放资源
-        stmt.close();
-        // 关闭数据库连接，这是个好习惯。尽管在程序运行结束会自动关闭。但web应用是不会结束运行的。
-        conn.close();
-    }
-DatabaseMetaData-数据库信息
-ResultSet getTables(String catalog, String schemaPattern, String tableNamePattern, String types[]);
-catalog是数据库，schemaPattern是数据库用户，表名，types指table或view等，该库函数返回一个ResultSet对象，每一条记录是对一个表的描述。只有那些符合参数要求的表才被返回。结果集的每一行有8个字段，其中第三个为表名称。
-    // 获取数据库中的表名
-    public static String[] getTableNames(String DBname, Connection conn) {
-        String[] tables = null;
-        try {
-            DatabaseMetaData DBmeta = conn.getMetaData();
-            String types[] = { "TABLE" };
-            ResultSet rs = DBmeta.getTables(DBname, null, null, types);
-            List<String> ls = new ArrayList<String>();
-            int i = 0;
-            while (rs.next()) {
-                ls.add(rs.getString(3));
-                i++;
-            }
-            tables = new String[i];
-            ls.toArray(tables);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return tables;
-    }
-ResultSet getColumns(String catalog, String schemaPattern, String tableNamePattern, String types[]);获取表中各列的信息
-    // 获取表的所有字段名字
-    public static String[] getFieldsNames(String tableName, Connection conn) {
-        String[] fields = null;
-        try {
-            DatabaseMetaData DBmeta = conn.getMetaData();
-            ResultSet rs = DBmeta.getColumns(null, null, tableName, null);
-            List<String> ls = new ArrayList<String>();
-            int i = 0;
-            while (rs.next()) {
-                ls.add(rs.getString(4));
-                i++;
-            }
-            fields = new String[i];
-            ls.toArray(fields);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return fields;
-    }
-
-Statement对象发送SQL语句
-Statement接口提供了三种执行SQL的语句的方法：
-    方法executeQuery：用于产生单个结果集的语句，例如 SELECT 语句。
-    方法executeUpdate：用于执行INSERT、UPDATE或DELETE语句以及SQL DL（数据定义语言）语句，例如CREATE TABLE和DROP TABLE。INSERT、UPDATE或DELETE语句的效果是修改表中零行或多行中的一列或多列。executeUpdate的返回值是一个整数，指示受影响的行数（即更新计数）。对于CREATE TABLE或DROP TABLE等不操作行的语句，executeUpdate的返回值总为零。
-    方法execute：用于执行返回多个结果集、多个更新计数或两者组合的语句。
-当生成ResultSet对象的Statement对象关闭、重新执行或用来从多个结果的序列获取下一个结果时，该 Statement 对象将自动关闭 ResultSet 对象。这意味着在重新执行Statement对象之前，需要完成对当前ResultSet对象的处理。
-
-结果集Resultset对象
-一个ResultSet对象对应着一个由查询语句返回的一个表，这个表中包含所有的查询结果。实际上，可以将一个ResultSet对象看成一个二维表。对ResultSet对象的处理必须逐行进行，而对每一行中的各个列，可以按任何顺序进行处理。
-    行与光标：ResultSet 对象具有指向其当前数据行的光标。最初，光标被置于第一行之前。next 方法将光标移动到下一行；因为该方法在 ResultSet 对象没有下一行时返回 false，所以可以在 while 循环中使用它来迭代结果集。
-    取得列：在对每一行进行处理时，可以对各个列按任意顺序进行处理。不过，按从左到右的顺序对各列进行处理可以获得较高的执行效率。ResultSet类的getXXX()方法可以从某一列中获得检索结果。其中XXX是JDBC中的Java数据类型，如int、String、Date等。ResultSet提供两种方法来指定列进行检索：一种是以一个int值作为列的索引，另一种是以一个String对象作为列名来索引。第一种效率更高。
-    // 在Connection对象上创建Statement对象
-    Statement stmt=conn.createStatement();
-    String sql="SELECT int_colmn, string_colmn,date_colmn," +" byte_colmn FROM table_name";
-    //用Statement对象执行SQL语句，返回结果集
-    ResultSet re=stmt.executeQuery(sql);
-    while(rs.next()) {
-        // 以两种不同的方式取得数据
-        int int_value=rs.getInt(1);
-        String string_value=rs.getString("colmn2");
-        Date date_value=rs.getInt(3);
-        Byte byte_value[]=rs.getString("colmn4");
-        // 将检索结果在用户浏览器上输出
-        out.println(int_value+" "+string_value+" "+date_value+" ");
-    }
-ResultsetMetaData rsdata=resultset.getMetaData();获取结果集的信息
-给出几个常用的方法：
-(1)getColumnCount()：返回一个int值，指出结果集中的列数；
-(2)getColumnLabel(int column)：返回column所指的列的显示标题，field的SQL AS的值；
-(3)getColumnName(int column)：返回的是field的原始名字。可以把此方法返回的String对象作为Resultset类的getXXX()方法的参数。不过，并没有太大的实际意义；
-(4)getColumnType(int comlumn)：返回指定列的SQL数据类型。它的返回值是一个int值。在java.sql.Types类中有关于各种SQL数据类型的定义；
-(5)getColumnTypeName(int comlumn)：返回指定列的数据类型在数据源中的名称。它的返回值是一个String对象；这个比较常用。
-(6)isNullable(int column)：返回一个boolean值，指出该列是否允许存入一个NULL值。
-    // LinkedHashMap保留插入顺序
-    public static LinkedHashMap<String, String> getFields(String tableName,
-            Connection conn) {
-        LinkedHashMap<String, String> fields = new LinkedHashMap<>();
-        String sql = "select * from " + tableName;
-        Statement stmt;
-        try {
-            stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            ResultSetMetaData rsmeta = (ResultSetMetaData) rs.getMetaData();
-            int count = rsmeta.getColumnCount();
-            for (int i = 1; i <= count; i++) {
-                fields.put(rsmeta.getColumnLabel(i),rsmeta.getColumnTypeName(i));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return fields;
-    }

@@ -1,7 +1,6 @@
 package com.wu.yuanhao.db;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -34,22 +33,20 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-import static com.wu.yuanhao.db.util.BaseActivity.actionStart;
-
 public class LoginActivity extends AppCompatActivity {
 
-    public static final int STD_SCRN_WIDTH = 768;
     ImageView mLoginImage; // 登录界面图片
     ProgressBar mLoginProgBar; // 登录进度条
-    TextView mNameTv;
+    TextView mUsernameTv;
     TextView mPasswordTv;
-    EditText mNameEt; // 用户名输入
+    EditText mUsernameEt; // 用户名输入
     EditText mPasswordEt; // 密码输入
     Button mLoginBtn; // 登录按钮
     WindowManager mWindMng;
-    DisplayMetrics outMetrics = new DisplayMetrics();
-//    public static final int STD_SCRN_HEIGHT = 1280;
+    public static final int STD_SCRN_WIDTH = 768;
+    //    public static final int STD_SCRN_HEIGHT = 1280;
     public float mFontSize = 18;
+    DisplayMetrics outMetrics = new DisplayMetrics();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +63,9 @@ public class LoginActivity extends AppCompatActivity {
 
         // 获取界面组件
         mLoginImage = findViewById(R.id.iv_login_pic);
-        mNameTv = findViewById(R.id.tv_username);
+        mUsernameTv = findViewById(R.id.tv_username);
         mPasswordTv = findViewById(R.id.tv_password);
-        mNameEt = findViewById(R.id.et_name);
+        mUsernameEt = findViewById(R.id.et_username);
         mPasswordEt = findViewById(R.id.et_pwd);
         mLoginBtn = findViewById(R.id.btn_login);
         mLoginProgBar = findViewById(R.id.progbar_login);
@@ -88,9 +85,9 @@ public class LoginActivity extends AppCompatActivity {
         int mScrnWidth = outMetrics.widthPixels;
 //        int mScrnHeight = outMetrics.heightPixels;
         mFontSize = mScrnWidth/STD_SCRN_WIDTH *18;
-        mNameTv.setTextSize(mFontSize);
+        mUsernameTv.setTextSize(mFontSize);
         mPasswordTv.setTextSize(mFontSize);
-        mNameEt.setTextSize(mFontSize);
+        mUsernameEt.setTextSize(mFontSize);
         mPasswordEt.setTextSize(mFontSize);
         mLoginBtn.setTextSize(mFontSize);
 
@@ -99,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // 获取用户名和密码的输入
-                String name = mNameEt.getText().toString();
+                String name = mUsernameEt.getText().toString();
                 String password = mPasswordEt.getText().toString();
                 String testPwd = "123";
 
