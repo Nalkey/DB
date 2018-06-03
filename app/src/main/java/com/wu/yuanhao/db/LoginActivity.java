@@ -23,10 +23,15 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.wu.yuanhao.db.util.HttpUtil;
+import com.wu.yuanhao.db.util.MyButton;
+import com.wu.yuanhao.db.util.MyEditText;
 import com.wu.yuanhao.db.util.MyLog;
+import com.wu.yuanhao.db.util.MyTextView;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import okhttp3.Call;
@@ -34,19 +39,13 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
-
-    ImageView mLoginImage; // 登录界面图片
-    ProgressBar mLoginProgBar; // 登录进度条
-    TextView mUsernameTv;
-    TextView mPasswordTv;
-    EditText mUsernameEt; // 用户名输入
-    EditText mPasswordEt; // 密码输入
-    Button mLoginBtn; // 登录按钮
-    WindowManager mWindMng;
-    public static final int STD_SCRN_WIDTH = 768;
-    //    public static final int STD_SCRN_HEIGHT = 1280;
-    public float mFontSize = 18;
-    DisplayMetrics outMetrics = new DisplayMetrics();
+    private ImageView mLoginImage; // 登录界面图片
+    private ProgressBar mLoginProgBar; // 登录进度条
+    private MyTextView mUsernameTv;
+    private MyTextView mPasswordTv;
+    private MyEditText mUsernameEt; // 用户名输入
+    private MyEditText mPasswordEt; // 密码输入
+    private MyButton mLoginBtn; // 登录按钮
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,24 +71,15 @@ public class LoginActivity extends AppCompatActivity {
 
         // 获取SharedPreferences中的缓存背景图片，如果有直接调用glide加载，如果没有就调用loadBingPic()
         SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Calendar date = Calendar.getInstance();
+        int today = date.get(Calendar.DAY_OF_YEAR);
+        int lastUpdate = mPrefs.getInt("today", 0);
         String mBingPic = mPrefs.getString("bing_pic", null);
-        if(mBingPic != null) {
+        if((today == lastUpdate) && (mBingPic != null)) {
             Glide.with(this).load(mBingPic).into(mLoginImage);
         } else {
             loadBingPic();
         }
-
-        // 获取屏幕宽度以定义字体大小
-        mWindMng = this.getWindowManager();
-        mWindMng.getDefaultDisplay().getMetrics(outMetrics);
-        int mScrnWidth = outMetrics.widthPixels;
-//        int mScrnHeight = outMetrics.heightPixels;
-        mFontSize = mScrnWidth/STD_SCRN_WIDTH *18;
-        mUsernameTv.setTextSize(mFontSize);
-        mPasswordTv.setTextSize(mFontSize);
-        mUsernameEt.setTextSize(mFontSize);
-        mPasswordEt.setTextSize(mFontSize);
-        mLoginBtn.setTextSize(mFontSize);
 
         // 登录按钮绑定点击事件
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +100,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     Intent mIntent = new Intent(LoginActivity.this, HomeActivity.class);
-                    mIntent.putExtra("FontSize", mFontSize);
                     startActivity(mIntent);
                 }else{
                     Toast.makeText(LoginActivity.this,
@@ -189,6 +178,12 @@ public class LoginActivity extends AppCompatActivity {
                 final String bingPic = response.body().string();
                 SharedPreferences.Editor editor = PreferenceManager.
                         getDefaultSharedPreferences(LoginActivity.this).edit();
+
+                // 获取当天是今年第几天，以判断是否刷新缓存
+                Calendar today = Calendar.getInstance();
+                int lastUpdate = today.get(Calendar.DAY_OF_YEAR);
+                editor.putInt("today", lastUpdate);
+
                 editor.putString("bing_pic", bingPic);
                 editor.apply();
                 runOnUiThread(new Runnable() {

@@ -1,5 +1,6 @@
 Retrofit -> DjangoORM -> MySQL
 https://www.jianshu.com/p/308f3c54abdd
+https://www.jianshu.com/p/05810d38f93a
 注解和retrofit
 https://www.jianshu.com/p/f1a8356c615f?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
 
@@ -42,5 +43,10 @@ git checkout . && git clean -xdf
 
 Retrofit详解，可继续阅读源码分析
 https://blog.csdn.net/carson_ho/article/details/73732076
+内存泄漏
+https://github.com/square/leakcanary
+Material Design
+http://wiki.jikexueyuan.com/project/material-design/
 
 10.2.2 Handler
+10.5.4 SharedPreferences

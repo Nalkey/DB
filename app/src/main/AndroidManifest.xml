@@ -46,7 +46,6 @@
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
-        <!-- activity android:name=".util.BaseActivity"></activity -->
         <activity android:name=".DbActivity"></activity>
     </application>
 

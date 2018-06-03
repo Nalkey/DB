@@ -23,6 +23,7 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.google.gson.Gson;
 import com.wu.yuanhao.db.util.MyLog;
+import com.wu.yuanhao.db.util.MyTextView;
 import com.wu.yuanhao.db.util.MyWeather;
 
 import java.io.BufferedReader;
@@ -47,18 +48,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ImageButton mMapBtn;
     private ImageButton mSetBtn;
     private ImageView mAirCondImg;
-    private TextView mTemperTv;
-    private TextView mLocationTv;
-    private TextView mAirCondTv;
-    private TextView mAqiTv;
-    private TextView mPollutionTv;
+    private MyTextView mTemperTv;
+    private MyTextView mLocationTv;
+    private MyTextView mAirCondTv;
+    private MyTextView mAqiTv;
+    private MyTextView mPollutionTv;
     public LocationClient mLocationClient;
     public LocationClientOption mLocationClientOpt;
     public String mPosition;
     public HeWeather mHeWeather;
     public Now mWeatherInfo;
     public AirNow mAQI;
-    public float mFontSize = 18;
     // 在消息队列中实现对控件的更改
     public static final int UPDATE_WEATHER = 1;
     public static final int UPDATE_AQI =2;
@@ -103,8 +103,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                         activity.mTemperTv.setText(mMyWeather.getCode());
                                         activity.mLocationTv.setText(mMyWeather.getLocation());
                                         activity.mAirCondTv.setText(mMyWeather.getCondZh());
-                                        //mAqiTv.setText(mMyWeather.getAQI());
-                                        //mPollutionTv.setText(mMyWeather.getPollution());
                                         break;
                                     } else {
                                         continue;
@@ -149,8 +147,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         if (!aqiInfo.getStatus().equals("ok")) {
                             Toast.makeText(activity, "空气质量服务不可用", Toast.LENGTH_SHORT).show();
                         } else {
-                            activity.mAqiTv.setText(aqiInfo.getAir_now_city().getAqi());
-                            activity.mPollutionTv.setText(aqiInfo.getAir_now_city().getMain());
+                            activity.mAqiTv.setText("AQI: " + aqiInfo.getAir_now_city().getAqi());
+                            activity.mPollutionTv.setText("主要污染物" + aqiInfo.getAir_now_city().getMain());
                         }
                         break;
                     default:
@@ -174,8 +172,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mDbBtn.setOnClickListener(this);
         mMapBtn.setOnClickListener(this);
         mSetBtn.setOnClickListener(this);
-        Intent mIntent = getIntent();
-        mFontSize = mIntent.getFloatExtra("FontSize", 18);
         MyLog.d("DBG", "onCreate");
 
         // 配置LocationClient
@@ -192,13 +188,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_db:
-                // TODO
-                Toast.makeText(this, "DB", Toast.LENGTH_SHORT).show();
+                Intent intent_db = new Intent(HomeActivity.this, DbActivity.class);
+                startActivity(intent_db);
                 MyLog.d("HomeIntent", "DB Button");
                 break;
             case R.id.btn_map:
-                Intent mIntent = new Intent(HomeActivity.this, MapActivity.class);
-                startActivity(mIntent);
+                Intent intent_map = new Intent(HomeActivity.this, MapActivity.class);
+                startActivity(intent_map);
                 MyLog.d("HomeIntent", "Map Button");
                 break;
             case R.id.btn_settings:
@@ -259,11 +255,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             mAirCondTv = findViewById(R.id.tv_air_cond);
             mAqiTv = findViewById(R.id.tv_aqi);
             mPollutionTv = findViewById(R.id.tv_pollution);
-            mTemperTv.setTextSize(mFontSize);
-            mLocationTv.setTextSize(mFontSize);
-            mAirCondTv.setTextSize(mFontSize);
-            mAqiTv.setTextSize(mFontSize);
-            mPollutionTv.setTextSize(mFontSize);
             // 配置和风，获取天气信息
             String mHeWeatherUserID = HomeActivity.this.getString(R.string.heweather_userid);
             String mHeWeatherAK = HomeActivity.this.getString(R.string.heweather_ak);

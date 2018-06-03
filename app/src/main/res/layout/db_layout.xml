@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <com.wu.yuanhao.db.util.MyTextView
         android:id="@+id/tv_name"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/et_name" />
 
-    <TextView
+    <com.wu.yuanhao.db.util.MyTextView
         android:id="@+id/tv_gender"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -32,7 +32,7 @@
         app:layout_constraintStart_toStartOf="@+id/tv_name"
         app:layout_constraintEnd_toEndOf="@+id/tv_name" />
 
-    <EditText
+    <com.wu.yuanhao.db.util.MyEditText
         android:id="@+id/et_name"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -96,7 +96,7 @@
         app:layout_constraintStart_toStartOf="@+id/gl_right_db"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.wu.yuanhao.db.util.MyTextView
         android:id="@+id/tv_query_result"
         android:layout_width="0dp"
         android:layout_height="0dp"
