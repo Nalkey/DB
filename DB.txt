@@ -3,6 +3,11 @@ https://www.jianshu.com/p/308f3c54abdd
 https://www.jianshu.com/p/05810d38f93a
 注解和retrofit
 https://www.jianshu.com/p/f1a8356c615f?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
+Django2.0
+https://blog.csdn.net/amio_/article/details/78708538
+https://www.jianshu.com/p/1ea594584df6
+https://www.cnblogs.com/jokerbj/p/8146062.html
+http://www.cnblogs.com/btchenguang/archive/2012/08/29/2655933.html
 
 服务器返回JSON格式：
 {
