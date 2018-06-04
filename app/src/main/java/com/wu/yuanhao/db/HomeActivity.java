@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -22,6 +23,7 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.google.gson.Gson;
 import com.wu.yuanhao.db.util.MyLog;
+import com.wu.yuanhao.db.util.MyTextView;
 import com.wu.yuanhao.db.util.MyWeather;
 
 import java.io.BufferedReader;
@@ -46,27 +48,27 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ImageButton mMapBtn;
     private ImageButton mSetBtn;
     private ImageView mAirCondImg;
-    private TextView mTemperTv;
-    private TextView mLocationTv;
-    private TextView mAirCondTv;
-    private TextView mAqiTv;
-    private TextView mPollutionTv;
+    private MyTextView mTemperTv;
+    private MyTextView mLocationTv;
+    private MyTextView mAirCondTv;
+    private MyTextView mAqiTv;
+    private MyTextView mPollutionTv;
     public LocationClient mLocationClient;
     public LocationClientOption mLocationClientOpt;
     public String mPosition;
     public HeWeather mHeWeather;
     public Now mWeatherInfo;
     public AirNow mAQI;
-    public float mFontSize = 18;
     // 在消息队列中实现对控件的更改
     public static final int UPDATE_WEATHER = 1;
     public static final int UPDATE_AQI =2;
-    private final MyHandler mHandler = new MyHandler(this);
+    private final WeatherHandler mWeaHandler = new WeatherHandler(this);
+    private final AqiHandler mAqiHandler = new AqiHandler(this);
 
-    static class MyHandler extends Handler {
+    static class WeatherHandler extends Handler {
         private WeakReference<HomeActivity> mActivity;
 
-        public MyHandler(HomeActivity activity) {
+        public WeatherHandler(HomeActivity activity) {
             mActivity = new WeakReference<HomeActivity>(activity);
         }
 
@@ -101,8 +103,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                                         activity.mTemperTv.setText(mMyWeather.getCode());
                                         activity.mLocationTv.setText(mMyWeather.getLocation());
                                         activity.mAirCondTv.setText(mMyWeather.getCondZh());
-                                        //mAqiTv.setText(mMyWeather.getAQI());
-                                        //mPollutionTv.setText(mMyWeather.getPollution());
                                         break;
                                     } else {
                                         continue;
@@ -123,14 +123,32 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         }
                         break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    static class AqiHandler extends Handler {
+        private WeakReference<HomeActivity> mActivity;
+
+        public AqiHandler(HomeActivity activity) {
+            mActivity = new WeakReference<HomeActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            HomeActivity activity = mActivity.get();
+            if(activity != null) {
+                switch (msg.what) {
                     case UPDATE_AQI:
-                        // TODO
                         AirNow aqiInfo = (AirNow) msg.obj;
                         if (!aqiInfo.getStatus().equals("ok")) {
                             Toast.makeText(activity, "空气质量服务不可用", Toast.LENGTH_SHORT).show();
                         } else {
-                            activity.mAqiTv.setText(aqiInfo.getAir_now_city().getAqi());
-                            activity.mPollutionTv.setText(aqiInfo.getAir_now_city().getMain());
+                            activity.mAqiTv.setText("AQI: " + aqiInfo.getAir_now_city().getAqi());
+                            activity.mPollutionTv.setText("主要污染物" + aqiInfo.getAir_now_city().getMain());
                         }
                         break;
                     default:
@@ -144,7 +162,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLocationClient = new LocationClient(getApplicationContext());
-        mLocationClient.registerLocationListener(new MyLocationListener());
+        mLocationClient.registerLocationListener(new HomeLocationListener());
         setContentView(R.layout.home_layout);
         Toolbar toolbar = findViewById(R.id.top_toolbar);
         setSupportActionBar(toolbar);
@@ -154,8 +172,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mDbBtn.setOnClickListener(this);
         mMapBtn.setOnClickListener(this);
         mSetBtn.setOnClickListener(this);
-        Intent mIntent = getIntent();
-        mFontSize = mIntent.getFloatExtra("FontSize", 18);
         MyLog.d("DBG", "onCreate");
 
         // 配置LocationClient
@@ -172,19 +188,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_db:
-                // TODO
-                Toast.makeText(this, "DB", Toast.LENGTH_SHORT).show();
-                MyLog.d("TAG", "DB Button");
+                Intent intent_db = new Intent(HomeActivity.this, DbActivity.class);
+                startActivity(intent_db);
+                MyLog.d("HomeIntent", "DB Button");
                 break;
             case R.id.btn_map:
-                // TODO
-                Toast.makeText(this, "Map", Toast.LENGTH_SHORT).show();
-                MyLog.d("TAG", "Map Button");
+                Intent intent_map = new Intent(HomeActivity.this, MapActivity.class);
+                startActivity(intent_map);
+                MyLog.d("HomeIntent", "Map Button");
                 break;
             case R.id.btn_settings:
                 // TODO
                 Toast.makeText(this, "Set", Toast.LENGTH_SHORT).show();
-                MyLog.d("TAG", "Set Button");
+                MyLog.d("HomeIntent", "Set Button");
                 break;
             default:
                 break;
@@ -200,7 +216,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.about:
-                Toast.makeText(this, "Yuanhao WU", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder dialog = new AlertDialog.Builder(HomeActivity.this);
+                dialog.setTitle("关于");
+                dialog.setMessage("作者：Yuanhao WU\n邮箱：254138148@qq.com");
+                dialog.show();
                 break;
             default:
         }
@@ -217,7 +236,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     // 若无法取得定位，默认定位北京海淀区
     // 1.由于定位是异步的，和风等待定位结果才能获得location
     // 2.这样正好符合天气信息插件不影响主要功能的使用
-    public class MyLocationListener implements BDLocationListener {
+    public class HomeLocationListener implements BDLocationListener {
         @Override
         public void onReceiveLocation(BDLocation location) {
             if (TextUtils.isEmpty(location.getCity())) {
@@ -236,11 +255,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             mAirCondTv = findViewById(R.id.tv_air_cond);
             mAqiTv = findViewById(R.id.tv_aqi);
             mPollutionTv = findViewById(R.id.tv_pollution);
-            mTemperTv.setTextSize(mFontSize);
-            mLocationTv.setTextSize(mFontSize);
-            mAirCondTv.setTextSize(mFontSize);
-            mAqiTv.setTextSize(mFontSize);
-            mPollutionTv.setTextSize(mFontSize);
             // 配置和风，获取天气信息
             String mHeWeatherUserID = HomeActivity.this.getString(R.string.heweather_userid);
             String mHeWeatherAK = HomeActivity.this.getString(R.string.heweather_ak);
@@ -272,7 +286,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Message weatherMsg = new Message();
                     weatherMsg.what = UPDATE_WEATHER;
                     weatherMsg.obj = mWeatherInfo;
-                    mHandler.sendMessage(weatherMsg);
+                    mWeaHandler.sendMessage(weatherMsg);
                 }
             });
         /*
@@ -298,8 +312,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                     Message aqiMsg = new Message();
                     aqiMsg.what = UPDATE_AQI;
-                    aqiMsg.obj = mWeatherInfo;
-                    mHandler.sendMessage(aqiMsg);
+                    aqiMsg.obj = mAQI;
+                    mAqiHandler.sendMessage(aqiMsg);
                 }
             });
         }

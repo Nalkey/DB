@@ -108,10 +108,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/gl_v3" />
 
-    <TextView
+    <com.wu.yuanhao.db.util.MyTextView
         android:id="@+id/tv_temp"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="5dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -121,10 +122,11 @@
         app:layout_constraintEnd_toStartOf="@+id/tv_location"
         app:layout_constraintStart_toStartOf="@+id/gl_left" />
 
-    <TextView
+    <com.wu.yuanhao.db.util.MyTextView
         android:id="@+id/tv_location"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:gravity="start|center_vertical"
@@ -133,10 +135,11 @@
         app:layout_constraintStart_toEndOf="@+id/tv_temp"
         app:layout_constraintEnd_toStartOf="@+id/tv_air_cond" />
 
-    <TextView
+    <com.wu.yuanhao.db.util.MyTextView
         android:id="@+id/tv_air_cond"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:gravity="start|center_vertical"
@@ -145,7 +148,7 @@
         app:layout_constraintStart_toEndOf="@+id/tv_location"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <TextView
+    <com.wu.yuanhao.db.util.MyTextView
         android:id="@+id/tv_aqi"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -157,7 +160,7 @@
         app:layout_constraintStart_toStartOf="@id/tv_temp"
         app:layout_constraintEnd_toEndOf="@id/tv_temp" />
 
-    <TextView
+    <com.wu.yuanhao.db.util.MyTextView
         android:id="@+id/tv_pollution"
         android:layout_width="0dp"
         android:layout_height="0dp"

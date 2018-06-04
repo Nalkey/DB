@@ -9,7 +9,7 @@ import okhttp3.Request;
 
 public class HttpUtil {
     public static void sendOkHttpReq(String address, okhttp3.Callback callback) {
-
+        // TODO: 用retrofit替掉OkHttp
         OkHttpClient mClient = new OkHttpClient();
         Request mRequest = new Request.Builder().url(address).build();
         mClient.newCall(mRequest).enqueue(callback);

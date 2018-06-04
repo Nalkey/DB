@@ -1,10 +1,13 @@
 package com.wu.yuanhao.db;
-// http://www.cnblogs.com/lonelyxmas/p/7349176.html
+
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,63 +21,72 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.wu.yuanhao.db.util.BaseActivity;
+import com.bumptech.glide.Glide;
+import com.wu.yuanhao.db.util.HttpUtil;
+import com.wu.yuanhao.db.util.MyButton;
+import com.wu.yuanhao.db.util.MyEditText;
+import com.wu.yuanhao.db.util.MyLog;
+import com.wu.yuanhao.db.util.MyTextView;
 
+import java.io.IOException;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import static com.wu.yuanhao.db.util.BaseActivity.actionStart;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
-
-    public static final int STD_SCRN_WIDTH = 768;
-    ImageView mLoginImage; // 登录界面图片
-    ProgressBar mLoginProgBar; // 登录进度条
-    TextView mNameTv;
-    TextView mPasswordTv;
-    EditText mNameEt; // 用户名输入
-    EditText mPasswordEt; // 密码输入
-    Button mLoginBtn; // 登录按钮
-    WindowManager mWindMng;
-    DisplayMetrics outMetrics = new DisplayMetrics();
-//    public static final int STD_SCRN_HEIGHT = 1280;
-    public float mFontSize = 18;
+    private ImageView mLoginImage; // 登录界面图片
+    private ProgressBar mLoginProgBar; // 登录进度条
+    private MyTextView mUsernameTv;
+    private MyTextView mPasswordTv;
+    private MyEditText mUsernameEt; // 用户名输入
+    private MyEditText mPasswordEt; // 密码输入
+    private MyButton mLoginBtn; // 登录按钮
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 把屏幕最上面系统的状态栏和图片融合到一起，通过setSystemUiVisibility()改变系统UI的显示
+        // Android 5.0以上支持
+        if(Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.login_layout);
 
         // 获取界面组件
         mLoginImage = findViewById(R.id.iv_login_pic);
-        mNameTv = findViewById(R.id.tv_username);
+        mUsernameTv = findViewById(R.id.tv_username);
         mPasswordTv = findViewById(R.id.tv_password);
-        mNameEt = findViewById(R.id.et_name);
+        mUsernameEt = findViewById(R.id.et_username);
         mPasswordEt = findViewById(R.id.et_pwd);
         mLoginBtn = findViewById(R.id.btn_login);
         mLoginProgBar = findViewById(R.id.progbar_login);
 
-        // 获取屏幕宽度以定义字体大小
-        mWindMng = this.getWindowManager();
-        mWindMng.getDefaultDisplay().getMetrics(outMetrics);
-        int mScrnWidth = outMetrics.widthPixels;
-//        int mScrnHeight = outMetrics.heightPixels;
-        mFontSize = mScrnWidth/STD_SCRN_WIDTH *18;
-        mNameTv.setTextSize(mFontSize);
-        mPasswordTv.setTextSize(mFontSize);
-        mNameEt.setTextSize(mFontSize);
-        mPasswordEt.setTextSize(mFontSize);
-        mLoginBtn.setTextSize(mFontSize);
+        // 获取SharedPreferences中的缓存背景图片，如果有直接调用glide加载，如果没有就调用loadBingPic()
+        SharedPreferences mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Calendar date = Calendar.getInstance();
+        int today = date.get(Calendar.DAY_OF_YEAR);
+        int lastUpdate = mPrefs.getInt("today", 0);
+        String mBingPic = mPrefs.getString("bing_pic", null);
+        if((today == lastUpdate) && (mBingPic != null)) {
+            Glide.with(this).load(mBingPic).into(mLoginImage);
+        } else {
+            loadBingPic();
+        }
 
-        // TODO: 登录界面图片每日一换
         // 登录按钮绑定点击事件
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // 获取用户名和密码的输入
-                String name = mNameEt.getText().toString();
+                String name = mUsernameEt.getText().toString();
                 String password = mPasswordEt.getText().toString();
                 String testPwd = "123";
 
@@ -88,7 +100,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
 
                     Intent mIntent = new Intent(LoginActivity.this, HomeActivity.class);
-                    mIntent.putExtra("FontSize", mFontSize);
                     startActivity(mIntent);
                 }else{
                     Toast.makeText(LoginActivity.this,
@@ -139,6 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                         if(result != PackageManager.PERMISSION_GRANTED) {
                             Toast.makeText(this, "必须同意所有权限，程序才能正常工作！",
                                     Toast.LENGTH_SHORT).show();
+                            MyLog.d("Permission", Integer.toString(result));
                             finish();
                             return;
                         }
@@ -152,4 +164,35 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    // 从网络加载Bing每日一图：从guolin/api获得图片真实地址，将地址缓存到SharedPreferences中，使用glide加载
+    private void loadBingPic() {
+        String requestBingPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpReq(requestBingPic, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bingPic = response.body().string();
+                SharedPreferences.Editor editor = PreferenceManager.
+                        getDefaultSharedPreferences(LoginActivity.this).edit();
+
+                // 获取当天是今年第几天，以判断是否刷新缓存
+                Calendar today = Calendar.getInstance();
+                int lastUpdate = today.get(Calendar.DAY_OF_YEAR);
+                editor.putInt("today", lastUpdate);
+
+                editor.putString("bing_pic", bingPic);
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(LoginActivity.this).load(bingPic).into(mLoginImage);
+                    }
+                });
+            }
+        });
+    }
 }
