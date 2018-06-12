@@ -11,9 +11,15 @@ import android.widget.TextView;
 
 import com.wu.yuanhao.db.util.MyButton;
 import com.wu.yuanhao.db.util.MyEditText;
+import com.wu.yuanhao.db.util.MyGetQuery;
+import com.wu.yuanhao.db.util.MyQueryResult;
 import com.wu.yuanhao.db.util.MyTextView;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DbActivity extends AppCompatActivity {
     private MyTextView mDbNameTv;
@@ -39,20 +45,38 @@ public class DbActivity extends AppCompatActivity {
         mDbQueryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 获取查询条件
-                String name = mDbNameEt.getText().toString().trim();
                 // 获得用户选择性别
                 mDbGenderRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(RadioGroup group, int checkedId) {
-                        RadioButton radioButton = (RadioButton) group.findViewById(checkedId);
+                        // 获取查询条件
+                        String name = mDbNameEt.getText().toString().trim();
+                        RadioButton radioButton = group.findViewById(checkedId);
                         mGender = radioButton.getText().toString();
+
+                        String url = DbActivity.this.getString(R.string.dbURL);
+                        Retrofit retrofit = new Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create()).build();
+
+                        MyGetQuery request = retrofit.create(MyGetQuery.class);
+                        Call<MyQueryResult> call = request.getCall(name);
+                        call.enqueue(new Callback<MyQueryResult>() {
+                            //请求成功时回调
+                            @Override
+                            public void onResponse(Call<MyQueryResult> call, Response<MyQueryResult> response) {
+                                // 步骤7：处理返回的数据结果
+                                // TODO
+                                response.body();
+                            }
+
+                            //请求失败时回调
+                            @Override
+                            public void onFailure(Call<MyQueryResult> call, Throwable throwable) {
+                                System.out.println("连接失败");
+                            }
+                        });
                     }
                 });
             }
         });
-
-        String url = this.getString(R.string.dbURL);
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(url).build();
     }
 }
