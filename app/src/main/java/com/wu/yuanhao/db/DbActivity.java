@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.wu.yuanhao.db.util.MyButton;
 import com.wu.yuanhao.db.util.MyEditText;
@@ -64,14 +65,14 @@ public class DbActivity extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<MyQueryResult> call, Response<MyQueryResult> response) {
                                 // 步骤7：处理返回的数据结果
-                                // TODO
-                                response.body();
+                                mDbResultTv.setText(response.body().show());
                             }
 
                             //请求失败时回调
                             @Override
                             public void onFailure(Call<MyQueryResult> call, Throwable throwable) {
-                                System.out.println("连接失败");
+                                Toast.makeText(DbActivity.this,
+                                        "连接失败", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
