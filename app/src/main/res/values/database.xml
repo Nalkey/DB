@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="dbURL">http://192.168.99.100:8080/</string>
+    <string name="dbURL">http://192.168.117.35:8080/</string>
 </resources>

@@ -46,7 +46,30 @@ public class DbActivity extends AppCompatActivity {
         mDbQueryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 获得用户选择性别
+                // 获取查询条件
+                String name = mDbNameEt.getText().toString().trim();
+
+                String url = DbActivity.this.getString(R.string.dbURL);
+                Retrofit retrofit = new Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create()).build();
+
+                MyGetQuery request = retrofit.create(MyGetQuery.class);
+                Call<MyQueryResult> call = request.getCall();
+                call.enqueue(new Callback<MyQueryResult>() {
+                    //请求成功时回调
+                    @Override
+                    public void onResponse(Call<MyQueryResult> call, Response<MyQueryResult> response) {
+                        // 步骤7：处理返回的数据结果
+                        mDbResultTv.setText(response.body().show());
+                    }
+
+                    //请求失败时回调
+                    @Override
+                    public void onFailure(Call<MyQueryResult> call, Throwable throwable) {
+                        Toast.makeText(DbActivity.this,
+                                "连接失败", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                /*// 获得用户选择性别
                 mDbGenderRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -76,7 +99,7 @@ public class DbActivity extends AppCompatActivity {
                             }
                         });
                     }
-                });
+                });*/
             }
         });
     }
