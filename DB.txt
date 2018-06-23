@@ -1,57 +1,6 @@
-Retrofit -> DjangoORM -> MySQL
-https://www.jianshu.com/p/308f3c54abdd
-https://www.jianshu.com/p/05810d38f93a
-注解和retrofit
-https://www.jianshu.com/p/f1a8356c615f?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation
-Django2.0
-https://blog.csdn.net/amio_/article/details/78708538
-https://www.jianshu.com/p/1ea594584df6
-https://www.cnblogs.com/jokerbj/p/8146062.html
-http://www.cnblogs.com/btchenguang/archive/2012/08/29/2655933.html
-
 服务器返回JSON格式：
 {
   "status": 1,
   "msg": "message",
   "data":{}
 }
-
-1、宽高设置
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-组件的宽或者高都不能设置成 match_parent，如果设置了，后果就是该组件所有的约束失效。
-2、设置margin之前你必须设置layout_constraintLeft_toLeftOf 、layout_constraintRight_toRightOf、layout_constraintTop_toTopOf、layout_constraintBottom_toBottomOf等其中至少一个,才会有效果。
-
-获取屏幕宽度
-方法一：
-		WindowManager manager = this.getWindowManager();
-		DisplayMetrics outMetrics = new DisplayMetrics();
-		manager.getDefaultDisplay().getMetrics(outMetrics);
-		int width = outMetrics.widthPixels;
-		int height = outMetrics.heightPixels;
-方法二：
-		Resources resources = this.getResources();
-		DisplayMetrics dm = resources.getDisplayMetrics();
-		float density = dm.density;
-		int width = dm.widthPixels;
-		int height = dm.heightPixels;
-
-values.xml里，dimen下查看actionbar_default_height，会发现系统默认的是48dp
-
-Android Studio卡在refreshing gradle project的原因和快速解决办法
-gradle/wrapper/gradle-wrapper.properties里查看distributionUrl=https\://services.gradle.org/distributions/gradle-4.4-all.zip
-下载很慢，使用迅雷去下载，然后把zip包放到C:\Users\Yuanhao\.gradle\wrapper\dists\gradle-4.4-all\9br9xq1tocpiv8o6njlyu5op1\下解压
-并保证该文件夹下存在xx.zip.lck,xx.zip.part,xx.zip.ok文件
-
-放弃本地所有修改
-git checkout . && git clean -xdf
-
-Retrofit详解，可继续阅读源码分析
-https://blog.csdn.net/carson_ho/article/details/73732076
-内存泄漏
-https://github.com/square/leakcanary
-Material Design
-http://wiki.jikexueyuan.com/project/material-design/
-
-10.2.2 Handler
-10.5.4 SharedPreferences
